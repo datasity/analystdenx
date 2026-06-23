@@ -84,6 +84,7 @@
   border-bottom: 1px solid #e8e4de;
   background: #ffffff;
 }
+.process-num{display:none}
 .pd-hero-imgcard-icon {
   font-size: 18px;
 }
@@ -117,95 +118,11 @@
   .pd-hero-text { padding: 36px 0 24px }
   .pd-hero-text h1 { font-size: clamp(28px, 8vw, 40px) }
 }
-
-/* ── HERO ANIMATED VISUAL ── */
-.hero-visual {
-  position:relative;width:100%;height:380px;
-  display:flex;align-items:center;justify-content:center;
-  overflow:hidden;
-}
-.hero-orb-wrap {
-  position:relative;width:260px;height:260px;
-}
-.hero-orb-core {
-  position:absolute;inset:30px;border-radius:50%;
-  background:radial-gradient(circle at 35% 35%, rgba(184,134,11,0.18), rgba(31,77,58,0.08));
-  border:1.5px solid rgba(184,134,11,0.25);
-  backdrop-filter:blur(4px);
-  display:flex;align-items:center;justify-content:center;
-  animation:orbPulse 4s ease-in-out infinite;
-}
-@keyframes orbPulse{
-  0%,100%{transform:scale(1);box-shadow:0 0 30px rgba(184,134,11,0.08)}
-  50%{transform:scale(1.04);box-shadow:0 0 60px rgba(184,134,11,0.16)}
-}
-.hero-orb-ring {
-  position:absolute;inset:0;border-radius:50%;
-  border:1px solid rgba(184,134,11,0.15);
-  animation:ringRotate 18s linear infinite;
-}
-.hero-orb-ring:nth-child(2){
-  inset:-20px;border-color:rgba(31,77,58,0.12);
-  animation:ringRotate 28s linear infinite reverse;
-}
-.hero-orb-ring:nth-child(3){
-  inset:-45px;border-color:rgba(184,134,11,0.08);
-  animation:ringRotate 40s linear infinite;
-  border-style:dashed;
-}
-@keyframes ringRotate{ to{transform:rotate(360deg)} }
-
-/* Floating dots */
-.hero-dot {
-  position:absolute;border-radius:50%;
-  animation:dotFloat linear infinite;
-  opacity:0;
-}
-@keyframes dotFloat{
-  0%{opacity:0;transform:translateY(0) scale(0.5)}
-  15%{opacity:1}
-  85%{opacity:0.6}
-  100%{opacity:0;transform:translateY(-340px) scale(1.2)}
-}
-
-/* Data label chips */
-.hero-chip {
-  position:absolute;
-  background:rgba(17,17,17,0.75);
-  border:1px solid rgba(184,134,11,0.3);
-  color:#fff;
-  font-family:var(--font-data);font-size:11px;font-weight:700;
-  letter-spacing:0.06em;text-transform:uppercase;
-  padding:6px 12px;
-  white-space:nowrap;
-  backdrop-filter:blur(8px);
-  animation:chipFloat ease-in-out infinite;
-}
-@keyframes chipFloat{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-8px)}
-}
-.hero-metric {
-  position:absolute;
-  font-family:var(--font-data);font-weight:800;
-  color:var(--gold);
-  animation:metricPulse ease-in-out infinite;
-  text-shadow:0 0 20px rgba(184,134,11,0.4);
-}
-@keyframes metricPulse{
-  0%,100%{opacity:0.7;transform:scale(1)}
-  50%{opacity:1;transform:scale(1.05)}
-}
-.hero-img-overlay {
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-}
-.hero-img-overlay img {
-  width:130px;height:130px;object-fit:cover;border-radius:50%;
-  border:2px solid rgba(184,134,11,0.3);
-  opacity:0.85;
-}
-
+.t-body h2,.t-body h3{font-family:var(--font-display);font-weight:600;margin:1em 0 0.5em}
+.t-body p{margin-bottom:1em;line-height:1.8}
+.t-body ul,.t-body ol{padding-left:1.5em;margin-bottom:1em}
+.t-body li{margin-bottom:0.4em;line-height:1.7}
+.t-body strong{font-weight:700}.t-body em{font-style:italic}
 </style>
 
 <style>
@@ -253,16 +170,6 @@
   animation:spin 0.8s linear infinite;
 }
 @keyframes spin{ to{transform:rotate(360deg)} }
-</style>
-<style>
-/* Quill rendered content styles for project page */
-.t-body h1,.t-body h2,.t-body h3{font-family:var(--font-display,Georgia,serif);font-weight:600;margin:1.2em 0 0.5em;color:var(--ink,#111)}
-.t-body h2{font-size:1.3em}.t-body h3{font-size:1.15em}
-.t-body p{margin-bottom:1em;line-height:1.8}
-.t-body ul,.t-body ol{padding-left:1.5em;margin-bottom:1em}
-.t-body li{margin-bottom:0.4em;line-height:1.7}
-.t-body strong{font-weight:700}.t-body em{font-style:italic}
-.t-body br{display:block;margin-bottom:0.5em}
 </style>
 </head>
 <body>
@@ -333,18 +240,8 @@
     </div>
 
     <!-- RIGHT: framed image card -->
-    <div class="hero-visual" id="hero-visual">
-      <div class="hero-orb-wrap">
-        <div class="hero-orb-ring"></div>
-        <div class="hero-orb-ring"></div>
-        <div class="hero-orb-ring"></div>
-        <div class="hero-orb-core" id="hero-orb-core">
-          <div class="hero-img-overlay" id="hero-img-overlay" style="display:none">
-            <img id="hero-project-img" src="" alt=""/>
-          </div>
-        </div>
-      </div>
-      <!-- Floating chips — populated by JS -->
+    <div class="pd-hero-imgcard">
+      <img id="hero-project-img" src="assets/trans.png" alt="Project image"/>
     </div>
 
   </div>
@@ -357,20 +254,20 @@
   <div class="container">
     <div class="data-numbers" id="stats-strip">
       <div class="data-number-col">
-        <div class="data-number" id="stat-1">—</div>
+        <div class="data-number" id="stat-1">1,240</div>
         <div class="data-number-label" id="stat-1-label">Survey Responses</div>
       </div>
       <div class="data-number-col">
-        <div class="data-number" id="stat-2">—</div>
-        <div class="data-number-label" id="stat-2-label">Coverage Area</div>
+        <div class="data-number" id="stat-2">12</div>
+        <div class="data-number-label" id="stat-2-label">LGA Coverage Areas</div>
       </div>
       <div class="data-number-col">
-        <div class="data-number" id="stat-3">—</div>
-        <div class="data-number-label" id="stat-3-label">Status</div>
+        <div class="data-number" id="stat-3">72%</div>
+        <div class="data-number-label" id="stat-3-label">Report High Transport Burden</div>
       </div>
       <div class="data-number-col">
-        <div class="data-number" id="stat-4">—</div>
-        <div class="data-number-label" id="stat-4-label">Contributors</div>
+        <div class="data-number" id="stat-4">5</div>
+        <div class="data-number-label" id="stat-4-label">Research Contributors</div>
       </div>
     </div>
   </div>
@@ -397,23 +294,27 @@
         <div class="eyebrow-line"></div>
       </div>
       <div class="process-row" style="padding:20px 0">
-        <div class="process-content"><h3>Survey Design</h3><p>Structured questionnaires developed across relevant socioeconomic and thematic dimensions.</p></div>
+        <div class="process-num">01</div>
+        <div class="process-content"><h3>Survey Design</h3><p>Structured questionnaires developed across transport, income, and mobility dimensions.</p></div>
       </div>
       <div class="process-row" style="padding:20px 0">
+        <div class="process-num">02</div>
         <div class="process-content"><h3>Field Collection</h3><p>Face-to-face interviews conducted by trained field researchers across target local government areas.</p></div>
       </div>
       <div class="process-row" style="padding:20px 0">
+        <div class="process-num">03</div>
         <div class="process-content"><h3>Data Cleaning & Analysis</h3><p>Validated and cleaned dataset analysed using Power BI and Python.</p></div>
       </div>
       <div class="process-row" style="padding:20px 0;border-bottom:none">
-        <div class="process-content"><h3>Reporting</h3><p>Findings published as a public insights report with downloadable PDF and data outputs.</p></div>
+        <div class="process-num">04</div>
+        <div class="process-content"><h3>Reporting</h3><p>Findings published as a public insights report and downloadable PDF.</p></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ══════════════════════════════
-     KEY FINDINGS — only shown when completed
+     KEY FINDINGS
 ══════════════════════════════ -->
 <section id="findings-section" style="display:none;background:var(--bg-alt);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
   <div class="container">
@@ -421,14 +322,12 @@
       <span class="eyebrow-text">Key Findings</span>
       <div class="eyebrow-line"></div>
     </div>
-    <div class="project-findings" id="findings-grid">
-      <!-- Populated from Firebase when project is completed -->
-    </div>
+    <div class="project-findings" id="findings-grid"></div>
   </div>
 </section>
 
 <!-- ══════════════════════════════
-     RESEARCH TEAM — hidden until contributors assigned
+     RESEARCH TEAM
 ══════════════════════════════ -->
 <section id="team-section" style="display:none">
   <div class="container">
@@ -436,14 +335,12 @@
       <span class="eyebrow-text">Research Team</span>
       <div class="eyebrow-line"></div>
     </div>
-    <div class="contributors-strip" id="contributors-strip">
-      <!-- Populated from Firebase -->
-    </div>
+    <div class="contributors-strip" id="contributors-strip"></div>
   </div>
 </section>
 
 <!-- ══════════════════════════════
-     DOWNLOADS — dynamic from Firebase
+     DOWNLOADS
 ══════════════════════════════ -->
 <section id="downloads-section" style="background:var(--bg-alt);border-top:1px solid var(--border)">
   <div class="container">
@@ -451,9 +348,7 @@
       <span class="eyebrow-text">Downloads</span>
       <div class="eyebrow-line"></div>
     </div>
-    <div id="downloads-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border:1px solid var(--border)">
-      <!-- Populated from Firebase -->
-    </div>
+    <div id="downloads-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border:1px solid var(--border)"></div>
   </div>
 </section>
 
@@ -524,66 +419,6 @@ const app = initializeApp({
 });
 const db = getFirestore(app);
 
-
-/* ── HERO ANIMATED VISUAL ── */
-function initHeroVisual(p){
-  const wrap = document.getElementById('hero-visual');
-  if(!wrap) return;
-
-  // If project has image — show it in the orb
-  if(p.image){
-    const overlay = document.getElementById('hero-img-overlay');
-    const img     = document.getElementById('hero-project-img');
-    if(overlay && img){ overlay.style.display='flex'; img.src=p.image; img.alt=p.title||''; }
-  }
-
-  // Floating dots
-  const colors = ['#B8860B','rgba(184,134,11,0.5)','#1F4D3A','rgba(31,77,58,0.6)','rgba(255,255,255,0.3)'];
-  const sizes  = [3,4,5,3,4,6,3,5];
-  for(let i=0;i<18;i++){
-    const dot = document.createElement('div');
-    dot.className = 'hero-dot';
-    const size = sizes[i % sizes.length];
-    dot.style.cssText = [
-      'width:'+size+'px','height:'+size+'px',
-      'background:'+colors[i % colors.length],
-      'left:'+(10+Math.random()*80)+'%',
-      'bottom:'+(Math.random()*20)+'%',
-      'animation-duration:'+(4+Math.random()*8)+'s',
-      'animation-delay:'+(Math.random()*6)+'s',
-    ].join(';');
-    wrap.appendChild(dot);
-  }
-
-  // Floating data chips
-  const chips = [
-    { text: p.location ? p.location.split(',')[0] : 'Field Research', x:'5%',  y:'15%', delay:'0s', dur:'6s' },
-    { text: p.category || 'Applied Research',                          x:'60%', y:'8%',  delay:'1s', dur:'7s' },
-    { text: p.period ? p.period.split('–')[0].trim() : 'Ongoing',     x:'2%',  y:'70%', delay:'2s', dur:'5.5s' },
-    { text: (p.status||'active').toUpperCase(),                        x:'62%', y:'75%', delay:'0.5s', dur:'8s' },
-  ];
-  chips.forEach(c => {
-    const el = document.createElement('div');
-    el.className = 'hero-chip';
-    el.textContent = c.text;
-    el.style.cssText = 'left:'+c.x+';top:'+c.y+';animation-delay:'+c.delay+';animation-duration:'+c.dur;
-    wrap.appendChild(el);
-  });
-
-  // Floating metrics
-  const metrics = [
-    { val: p.responses ? p.responses.toLocaleString() : '—', x:'72%', y:'30%', size:'28px', delay:'0s',   dur:'5s' },
-    { val: p.category ? p.category.substring(0,3).toUpperCase() : 'RES', x:'8%', y:'40%', size:'22px', delay:'1.5s', dur:'6s' },
-  ];
-  metrics.forEach(m => {
-    const el = document.createElement('div');
-    el.className = 'hero-metric';
-    el.textContent = m.val;
-    el.style.cssText = 'left:'+m.x+';top:'+m.y+';font-size:'+m.size+';animation-delay:'+m.delay+';animation-duration:'+m.dur;
-    wrap.appendChild(el);
-  });
-}
-
 async function loadProject(){
   const id = new URLSearchParams(window.location.search).get('id');
   if(!id) return; // no id = show default Transportation Cost Stress hardcoded content
@@ -610,93 +445,141 @@ async function loadProject(){
     if(chips[2]) chips[2].textContent = 'Field Research';
 
     // Image
-    // ── HERO ANIMATED VISUAL ──
-    initHeroVisual(p);
+    if(p.image){
+      const imgEl = document.getElementById('hero-project-img');
+      if(imgEl) imgEl.src = p.image;
+    }
 
     // Stats
-    // ── STATUS ──
-    const status = (p.status||'planned').toLowerCase();
-    const isPlanned   = status === 'planned';
-    const isCompleted = status === 'completed';
-    const isActive    = status === 'active' || status === 'ongoing';
-
-    // ── SMART STATS ──
-    const s1=document.getElementById('stat-1'), s1l=document.getElementById('stat-1-label');
-    const s2=document.getElementById('stat-2'), s2l=document.getElementById('stat-2-label');
-    const s3=document.getElementById('stat-3'), s3l=document.getElementById('stat-3-label');
-    const s4=document.getElementById('stat-4'), s4l=document.getElementById('stat-4-label');
-
+    // Smart stats
+    const status=(p.status||'planned').toLowerCase();
+    const isPlanned=status==='planned', isCompleted=status==='completed', isActive=status==='active'||status==='ongoing';
+    const s1=document.getElementById('stat-1'),s1l=document.getElementById('stat-1-label');
+    const s2=document.getElementById('stat-2'),s2l=document.getElementById('stat-2-label');
+    const s3=document.getElementById('stat-3'),s3l=document.getElementById('stat-3-label');
+    const s4=document.getElementById('stat-4'),s4l=document.getElementById('stat-4-label');
     if(isPlanned){
-      if(s1) s1.textContent=p.responses?p.responses.toLocaleString():'TBD'; if(s1l) s1l.textContent='Target Responses';
-      if(s2) s2.textContent=p.location?p.location.split(',')[0]:'TBD';      if(s2l) s2l.textContent='Target Location';
-      if(s3) s3.textContent=p.period||'Upcoming';                            if(s3l) s3l.textContent='Planned Period';
-      if(s4) s4.textContent='—';                                             if(s4l) s4l.textContent='Contributors (TBC)';
+      if(s1)s1.textContent=p.responses?p.responses.toLocaleString():'TBD'; if(s1l)s1l.textContent='Target Responses';
+      if(s2)s2.textContent=p.location?p.location.split(',')[0]:'TBD';      if(s2l)s2l.textContent='Target Location';
+      if(s3)s3.textContent=p.period||'Upcoming';                            if(s3l)s3l.textContent='Planned Period';
+      if(s4)s4.textContent='—';                                             if(s4l)s4l.textContent='Contributors (TBC)';
     } else {
-      if(s1) s1.textContent=p.responses?p.responses.toLocaleString():(isActive?'In Progress':'—'); if(s1l) s1l.textContent='Survey Responses';
-      if(s2) s2.textContent=p.location?p.location.split(',')[0]:'—';                               if(s2l) s2l.textContent='Coverage Area';
-      if(s3) s3.textContent=p.period||'—';                                                         if(s3l) s3l.textContent='Study Period';
-      if(s4) s4.textContent=isCompleted?'Completed':'Ongoing';                                     if(s4l) s4l.textContent='Status';
+      if(s1)s1.textContent=p.responses?p.responses.toLocaleString():(isActive?'In Progress':'—'); if(s1l)s1l.textContent='Survey Responses';
+      if(s2)s2.textContent=p.location?p.location.split(',')[0]:'—';                               if(s2l)s2l.textContent='Coverage Area';
+      if(s3)s3.textContent=p.period||'—';                                                         if(s3l)s3l.textContent='Study Period';
+      if(s4)s4.textContent=isCompleted?'Completed':'Ongoing';                                     if(s4l)s4l.textContent='Status';
     }
 
-    // ── KEY FINDINGS — only show when completed ──
-    const findingsSec = document.getElementById('findings-section');
-    if(isCompleted && p.findings && Array.isArray(p.findings) && p.findings.length){
-      findingsSec.style.display = 'block';
-      document.getElementById('findings-grid').innerHTML = p.findings.map(f=>
-        `<div class="finding-col">
-          <div class="finding-num">${f.metric||'—'}</div>
-          <div class="finding-label">${f.label||''}</div>
-        </div>`).join('');
-    } else if(findingsSec){
-      findingsSec.style.display = 'none';
+    // Key findings — completed only
+    const findSec=document.getElementById('findings-section');
+    const findGrid=document.getElementById('findings-grid');
+    if(isCompleted&&p.findings&&p.findings.length&&findSec&&findGrid){
+      findSec.style.display='block';
+      findGrid.innerHTML=p.findings.map(f=>`<div class="finding-col"><div class="finding-num">${f.metric||'—'}</div><div class="finding-label">${f.label||''}</div></div>`).join('');
     }
 
-    // ── RESEARCH TEAM — only show if contributors assigned ──
-    const teamSec = document.getElementById('team-section');
-    const strip   = document.getElementById('contributors-strip');
-    if(p.title){
-      const contribSnap = await getDocs(collection(db,'contributors'));
-      const assigned = contribSnap.docs.map(d=>({id:d.id,...d.data()}))
-        .filter(c => Array.isArray(c.projects) && c.projects.some(pr=>
-          (p.title||'').toLowerCase().includes((pr||'').toLowerCase().substring(0,8)) ||
-          (pr||'').toLowerCase().includes((p.title||'').toLowerCase().substring(0,8))
-        ));
-      if(assigned.length && teamSec && strip){
-        teamSec.style.display = 'block';
-        strip.innerHTML = assigned.map(c=>`
-          <div class="contributor-col">
-            <div class="contributor-avatar">
-              <img src="${c.avatar||'assets/avatars/contr-1.png'}" alt="${c.name||''}" onerror="this.src='assets/avatars/contr-1.png'"/>
-            </div>
-            <p class="contributor-name">${c.name||'—'}</p>
-            <p class="contributor-role">${c.role||''}</p>
-          </div>`).join('');
-      } else if(teamSec){
-        teamSec.style.display = 'none';
+    // Research team — only if contributors assigned
+    const teamSec=document.getElementById('team-section');
+    const strip=document.getElementById('contributors-strip');
+    if(p.title&&teamSec&&strip){
+      const cSnap=await getDocs(collection(db,'contributors'));
+      const assigned=cSnap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>Array.isArray(c.projects)&&c.projects.some(pr=>(p.title||'').toLowerCase().includes((pr||'').toLowerCase().substring(0,8))||(pr||'').toLowerCase().includes((p.title||'').toLowerCase().substring(0,8))));
+      if(assigned.length){
+        teamSec.style.display='block';
+        strip.innerHTML=assigned.map(c=>`<div class="contributor-col"><div class="contributor-avatar"><img src="${c.avatar||'assets/avatars/contr-1.png'}" alt="${c.name||''}" onerror="this.src='assets/avatars/contr-1.png'"/></div><p class="contributor-name">${c.name||'—'}</p><p class="contributor-role">${c.role||''}</p></div>`).join('');
       }
     }
 
-    // ── DOWNLOADS — show Not Available if no file ──
-    const dlGrid = document.getElementById('downloads-grid');
-    const dlSec  = document.getElementById('downloads-section');
+    // Downloads
+    const dlGrid=document.getElementById('downloads-grid');
     if(dlGrid){
-      const files = [
-        { tag:'PDF Report',   title:'Full Research Report', url: p.pdf,          ext:'PDF' },
-        { tag:'Dataset',      title:'Raw Survey Dataset',   url: p.dataset,       ext:'CSV/Excel' },
-        { tag:'Methodology',  title:'Research Methodology', url: p.methodology,   ext:'PDF' },
-        { tag:'Presentation', title:'Findings Deck',        url: p.presentation,  ext:'PPTX' },
+      const files=[
+        {tag:'PDF Report',   title:'Full Research Report', url:p.pdf,          ext:'PDF'},
+        {tag:'Dataset',      title:'Raw Survey Dataset',   url:p.dataset,       ext:'CSV/Excel'},
+        {tag:'Methodology',  title:'Research Methodology', url:p.methodology,   ext:'PDF'},
+        {tag:'Presentation', title:'Findings Deck',        url:p.presentation,  ext:'PPTX'},
       ];
-      const hasAny = files.some(f=>f.url);
-      if(dlSec) dlSec.style.display = hasAny || isCompleted ? 'block' : 'none';
-      dlGrid.innerHTML = files.map(f=>`
-        <div class="pub-card" style="${!f.url?'opacity:0.55':''}">
-          <span class="pub-tag">${f.tag}</span>
-          <p class="pub-title">${f.title}</p>
-          <p class="pub-meta">${f.url ? f.ext : 'Not yet available'}</p>
-          ${f.url
-            ? `<a href="${f.url}" class="pub-download" target="_blank" download>↓ Download</a>`
-            : `<span class="pub-download" style="color:var(--text-lt);cursor:default">Not Available</span>`}
-        </div>`).join('');
+      dlGrid.innerHTML=files.map(f=>`<div class="pub-card" style="${!f.url?'opacity:0.5':''}"><span class="pub-tag">${f.tag}</span><p class="pub-title">${f.title}</p><p class="pub-meta">${f.url?f.ext:'Not yet available'}</p>${f.url?`<a href="${f.url}" class="pub-download" target="_blank" download>↓ Download</a>`:`<span class="pub-download" style="color:var(--text-lt);cursor:default">Not Available</span>`}</div>`).join('');
+    }
+
+    // Description
+    const descEls = document.querySelectorAll('.t-body');
+    if(descEls[0] && p.description) descEls[0].innerHTML = p.description;
+    if(descEls[1] && p.writeup)     descEls[1].innerHTML = p.writeup;
+
+    // Pull quote
+    const quoteEl = document.querySelector('.pull-quote');
+    if(quoteEl && p.quote) quoteEl.textContent = `"${p.quote}"`;
+
+    // Downloads
+    const dlLinks = {
+      pdf:          document.querySelector('a[download].pub-card'),
+      dataset:      null,
+      methodology:  null,
+      presentation: null
+    };
+
+    // Power BI button
+    const pbiBtnWrap = document.getElementById('pbi-btn-wrap');
+    if(pbiBtnWrap){
+      if(p.powerbi){
+        pbiBtnWrap.innerHTML = `
+          <button onclick="openPBI('${p.powerbi}','${(p.title||'').replace(/'/g,"\'")} — Dashboard')"
+            class="btn btn--primary" style="display:inline-flex;align-items:center;gap:8px">
+            📊 View Interactive Dashboard
+          </button>`;
+      } else {
+        pbiBtnWrap.innerHTML = '';
+      }
+    }
+
+    // Update download cards
+    const pubCards = document.querySelectorAll('.pub-card');
+    if(pubCards[0] && p.pdf){
+      pubCards[0].href = p.pdf;
+      pubCards[0].style.opacity = '1';
+    }
+    if(pubCards[1] && p.dataset){
+      pubCards[1].href = p.dataset;
+      pubCards[1].style.opacity = '1';
+      pubCards[1].setAttribute('href', p.dataset);
+      const dl = pubCards[1].querySelector('.pub-download');
+      if(dl) dl.textContent = '↓ Download';
+    }
+    if(pubCards[2] && p.methodology){
+      pubCards[2].href = p.methodology;
+      pubCards[2].style.opacity = '1';
+      const dl = pubCards[2].querySelector('.pub-download');
+      if(dl) dl.textContent = '↓ Download';
+    }
+    if(pubCards[3] && p.presentation){
+      pubCards[3].href = p.presentation;
+      pubCards[3].style.opacity = '1';
+      const dl = pubCards[3].querySelector('.pub-download');
+      if(dl) dl.textContent = '↓ Download';
+    }
+
+    // Load contributors assigned to this project
+    if(p.title){
+      const contribSnap = await getDocs(collection(db,'contributors'));
+      const assigned = contribSnap.docs.map(d=>({id:d.id,...d.data()}))
+        .filter(c => Array.isArray(c.projects) && c.projects.some(proj =>
+          proj.toLowerCase().includes(p.title.toLowerCase().substring(0,10))
+        ));
+
+      if(assigned.length){
+        const strip = document.querySelector('.contributors-strip');
+        if(strip){
+          strip.innerHTML = assigned.map(c => `
+            <div class="contributor-col">
+              <div class="contributor-avatar">
+                <img src="${c.avatar||'assets/avatars/contr-1.png'}" alt="${c.name||''}" onerror="this.src='assets/avatars/contr-1.png'"/>
+              </div>
+              <p class="contributor-name">${c.name||'—'}</p>
+              <p class="contributor-role">${c.role||''}</p>
+            </div>`).join('');
+        }
+      }
     }
 
   } catch(e){ console.error('Project detail load error:', e); }
