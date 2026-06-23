@@ -1112,35 +1112,33 @@ const __origEditProject = window.editProject;
 window.editProject = function(id){
   __origEditProject(id);
   const p = allProjects.find(x=>x.id===id);
-  setTimeout(()=>{ setQuill(projDescEditor, p?.description||''); setQuill(projWriteupEditor, p?.writeup||''); }, 100);
+  setTimeout(()=>{
+    initQuillEditors();
+    setQuill(projDescEditor, p?.description||'');
+    setQuill(projWriteupEditor, p?.writeup||'');
+  }, 120);
 };
 
 // Patch add project button
-document.getElementById('add-project-btn')?.addEventListener('click', ()=>{
-  setTimeout(()=>{ setQuill(projDescEditor,''); setQuill(projWriteupEditor,''); }, 100);
-});
+
 
 // Patch editPub
 const __origEditPub = window.editPub;
 window.editPub = function(id){
   __origEditPub(id);
   const p = allPubs.find(x=>x.id===id);
-  setTimeout(()=>setQuill(pubDescEditor, p?.description||''), 100);
+  setTimeout(()=>{ initQuillEditors(); setQuill(pubDescEditor, p?.description||''); }, 120);
 };
-document.getElementById('add-pub-btn')?.addEventListener('click', ()=>{
-  setTimeout(()=>setQuill(pubDescEditor,''), 100);
-});
+
 
 // Patch editContrib
 const __origEditContrib = window.editContrib;
 window.editContrib = function(id){
   __origEditContrib(id);
   const c = allContribs.find(x=>x.id===id);
-  setTimeout(()=>setQuill(contribBioEditor, c?.bio||''), 100);
+  setTimeout(()=>{ initQuillEditors(); setQuill(contribBioEditor, c?.bio||''); }, 120);
 };
-document.getElementById('add-contrib-btn')?.addEventListener('click', ()=>{
-  setTimeout(()=>setQuill(contribBioEditor,''), 100);
-});
+
 
 
 /* ── PROJECTS ── */
@@ -1178,7 +1176,13 @@ $('add-project-btn').onclick = () => {
   $('project-modal-title').textContent = 'Add Project';
   ['project-id','proj-title','proj-location','proj-period','proj-desc','proj-quote','proj-writeup','proj-powerbi','proj-sponsor','proj-image','proj-pdf','proj-dataset','proj-methodology','proj-presentation'].forEach(id => $(id).value=''); ['proj-pdf-prog','proj-dataset-prog','proj-method-prog','proj-pptx-prog'].forEach(id => { const el=$(id); if(el) el.textContent=''; });
   $('proj-responses').value=''; $('proj-category').value=''; $('proj-status').value='ongoing';
+  if($('proj-sponsor-search')) $('proj-sponsor-search').value='';
   showModal('project-modal');
+  setTimeout(()=>{
+    initQuillEditors();
+    setQuill(projDescEditor,'');
+    setQuill(projWriteupEditor,'');
+  }, 120);
 };
 
 window.editProject = id => {
@@ -1279,6 +1283,7 @@ $('add-pub-btn').onclick = () => {
   ['pub-id','pub-title','pub-authors','pub-date','pub-pdf','pub-desc'].forEach(id => $(id).value='');
   $('pub-type').value='Report'; $('pub-category').value='Transportation';
   showModal('pub-modal');
+  setTimeout(()=>{ initQuillEditors(); setQuill(pubDescEditor,''); }, 120);
 };
 
 window.editPub = id => {
@@ -1352,6 +1357,7 @@ $('add-contrib-btn').onclick = () => {
   $('contrib-modal-title').textContent = 'Add Contributor';
   ['contrib-id','contrib-name','contrib-role','contrib-email','contrib-location','contrib-bio','contrib-skills','contrib-avatar','contrib-projects'].forEach(id => $(id).value='');
   showModal('contrib-modal');
+  setTimeout(()=>{ initQuillEditors(); setQuill(contribBioEditor,''); }, 120);
 };
 
 window.editContrib = id => {
