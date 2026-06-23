@@ -165,6 +165,16 @@
 }
 @keyframes spin{ to{transform:rotate(360deg)} }
 </style>
+<style>
+/* Quill rendered content styles for project page */
+.t-body h1,.t-body h2,.t-body h3{font-family:var(--font-display,Georgia,serif);font-weight:600;margin:1.2em 0 0.5em;color:var(--ink,#111)}
+.t-body h2{font-size:1.3em}.t-body h3{font-size:1.15em}
+.t-body p{margin-bottom:1em;line-height:1.8}
+.t-body ul,.t-body ol{padding-left:1.5em;margin-bottom:1em}
+.t-body li{margin-bottom:0.4em;line-height:1.7}
+.t-body strong{font-weight:700}.t-body em{font-style:italic}
+.t-body br{display:block;margin-bottom:0.5em}
+</style>
 </head>
 <body>
 
@@ -519,12 +529,17 @@ async function loadProject(){
 
     // Description
     const descEls = document.querySelectorAll('.t-body');
-    if(descEls[0] && p.description) descEls[0].textContent = p.description;
-    if(descEls[1] && p.writeup)     descEls[1].textContent = p.writeup;
+    if(descEls[0] && p.description) descEls[0].innerHTML = p.description;
+    if(descEls[1] && p.writeup)     descEls[1].innerHTML = p.writeup;
 
     // Pull quote
     const quoteEl = document.querySelector('.pull-quote');
-    if(quoteEl && p.quote) quoteEl.textContent = `"${p.quote}"`;
+    if(quoteEl && p.quote){
+      // Strip any HTML from quote field
+      const tmp = document.createElement('div'); tmp.innerHTML = p.quote;
+      const cleanQuote = tmp.textContent || tmp.innerText || p.quote;
+      quoteEl.textContent = '"' + cleanQuote + '"';
+    }
 
     // Downloads
     const dlLinks = {
