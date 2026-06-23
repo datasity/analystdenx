@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Contributor Profile — Analyst Den</title>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<header class="site-header"><div class="container header-inner"><a href="index.html" class="header-logo"><img src="assets/analyst-den-logo-3d.png" alt="Analyst Den"/></a><nav class="header-nav"><a href="index.html">Home</a><a href="research.html">Research</a><a href="contributors.html">Community</a><a href="about.html">About</a><a href="get-involved.html">Get Involved</a></nav><div class="header-right"><a href="get-involved.html" class="header-cta">Apply Now</a><button class="menu-toggle">☰</button></div></div></header>
+<div class="mobile-menu"><button class="mobile-close">✕</button><a href="index.html">Home</a>
+<a href="research.html">Research</a>
+<a href="contributors.html">Community</a>
+<a href="about.html">About</a>
+<a href="get-involved.html">Get Involved</a></div>
+<div class="page-hero"><div class="container page-hero-inner"><p class="t-label" style="color:rgba(255,255,255,0.45);margin-bottom:14px">Analyst Den</p><h1>Emma Johnson</h1><p>Lead Data Scientist · Manchester, UK</p></div></div>
+<section><div class="container"><div class="cd-layout"><div class="cd-sidebar"><div class="cd-avatar"><img src="assets/avatars/contr-1.png" alt="Emma Johnson"/></div><h1 class="cd-name">Emma Johnson</h1><p class="cd-role">Data Scientist · Lead Analyst</p><p class="cd-location">📍 Manchester, UK</p><p class="cd-bio">Experienced data scientist passionate about machine learning, predictive analytics, and turning complex datasets into insights that drive real-world decisions. Contributor to 3 Analyst Den research projects.</p><div class="cd-tags"><span class="cd-tag">Power BI</span><span class="cd-tag">Python</span><span class="cd-tag">SQL</span><span class="cd-tag">Field Research</span></div><div style="display:flex;gap:10px"><a href="get-involved.html" class="btn btn--primary" style="font-size:11px;padding:10px 18px">Contact</a><a href="get-involved.html" class="btn btn--outline" style="font-size:11px;padding:10px 18px">Collaborate</a></div></div><div><div class="section-eyebrow"><span class="eyebrow-text">Research Contributions</span><div class="eyebrow-line"></div></div><div class="cd-project-item"><img src="assets/trans.png" alt=""/><div><h3>Transportation Cost Stress</h3><p class="t-body-sm">Lead analyst. Survey design, data cleaning, Power BI dashboard build.</p><p class="t-label" style="margin-top:4px">March 2026 · Ogun State</p></div></div><div class="cd-project-item"><img src="assets/mark.png" alt=""/><div><h3>Market Environmental Conditions</h3><p class="t-body-sm">Data engineer. Field data pipeline, validation and analysis.</p><p class="t-label" style="margin-top:4px">June 2026 · Ogun State</p></div></div><div class="cd-project-item"><img src="assets/buss.png" alt=""/><div><h3>SME Business Cashflow Stress</h3><p class="t-body-sm">Insight writer. Final report narrative and statistical summary.</p><p class="t-label" style="margin-top:4px">Sept 2026 · Ogun State</p></div></div></div></div></div></section>
+<footer class="site-footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><span class="footer-logo">Analyst Den</span><p>A Datavasity platform.</p></div><div class="footer-col"><p class="footer-col-title">Research</p><a href="research.html">Projects</a><a href="publications.html">Publications</a></div><div class="footer-col"><p class="footer-col-title">Community</p><a href="contributors.html">Contributors</a><a href="get-involved.html">Get Involved</a></div><div class="footer-col"><p class="footer-col-title">About</p><a href="about.html">About Us</a><a href="contact.html">Contact</a></div></div><div class="footer-bottom"><span>© 2026 Analyst Den by Datavasity</span><span>hello@analystden.org</span></div></div></footer>
+<script src="script.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyBzlCB74rpbd6o2vx7RbsfuIrkfOyhBUTQ",
+  authDomain:"analyst-den-3f9c9.firebaseapp.com",
+  projectId:"analyst-den-3f9c9",
+  storageBucket:"analyst-den-3f9c9.firebasestorage.app",
+  messagingSenderId:"438646500281",
+  appId:"1:438646500281:web:8a7c48d0ca882e2b5a6468"
+});
+const db = getFirestore(app);
+
+async function loadProfile(){
+  const id = new URLSearchParams(window.location.search).get('id');
+  if(!id) return;
+  try {
+    const snap = await getDoc(doc(db,'contributors',id));
+    if(!snap.exists()) return;
+    const c = snap.data();
+
+    // Update name
+    const nameEls = document.querySelectorAll('.cd-name, h1');
+    nameEls.forEach(el => { if(el.textContent.includes('Emma') || el.textContent.includes('Johnson')) el.textContent = c.name||'—' });
+
+    // Update role
+    const roleEl = document.querySelector('.cd-role');
+    if(roleEl) roleEl.textContent = c.role||'';
+
+    // Update location
+    const locEl = document.querySelector('.cd-location');
+    if(locEl) locEl.textContent = c.location ? '📍 '+c.location : '';
+
+    // Update bio
+    const bioEl = document.querySelector('.cd-bio');
+    if(bioEl) bioEl.textContent = c.bio||'';
+
+    // Update avatar
+    const avatarEl = document.querySelector('.cd-avatar img');
+    if(avatarEl && c.avatar){ avatarEl.src = c.avatar; avatarEl.onerror = () => {}; }
+
+    // Update skills
+    const tagsEl = document.querySelector('.cd-tags');
+    if(tagsEl && Array.isArray(c.skills)){
+      tagsEl.innerHTML = c.skills.map(s => `<span class="cd-tag">${s}</span>`).join('');
+    }
+
+    // Update page title
+    document.title = `${c.name||'Contributor'} — Analyst Den`;
+
+  } catch(e){ console.error('Profile load error:', e); }
+}
+
+loadProfile();
+</script>
+</body>
+</html>

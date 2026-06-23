@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Contributors — Analyst Den</title>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<header class="site-header"><div class="container header-inner"><a href="index.html" class="header-logo"><img src="assets/analyst-den-logo-3d.png" alt="Analyst Den"/></a><nav class="header-nav"><a href="index.html">Home</a><a href="research.html">Research</a><a href="contributors.html" class="active">Community</a><a href="about.html">About</a><a href="get-involved.html">Get Involved</a></nav><div class="header-right"><a href="get-involved.html" class="header-cta">Apply Now</a><button class="menu-toggle">☰</button></div></div></header>
+<div class="mobile-menu"><button class="mobile-close">✕</button><a href="index.html">Home</a><a href="research.html">Research</a><a href="contributors.html" class="active">Community</a><a href="about.html">About</a><a href="get-involved.html">Get Involved</a></div>
+
+<div class="page-hero"><div class="container page-hero-inner"><p class="t-label" style="color:rgba(255,255,255,0.45);margin-bottom:14px">The Community</p><h1>Our Contributors</h1><p>A network of analysts, researchers, field officers, and collaborators producing public-interest research.</p></div></div>
+
+<section>
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:32px;flex-wrap:wrap">
+      <div class="filter-bar">
+        <button class="filter-btn active">All</button>
+        <button class="filter-btn">Analysts</button>
+        <button class="filter-btn">Researchers</button>
+        <button class="filter-btn">Data Engineers</button>
+        <button class="filter-btn">Writers</button>
+        <button class="filter-btn">Field Officers</button>
+      </div>
+      <div class="search-bar" style="max-width:260px"><input class="search-input" type="text" placeholder="Search contributors…"/><button class="search-btn">Search</button></div>
+    </div>
+    <div class="contributor-grid" id="contributors-grid">
+      <div style="grid-column:1/-1;padding:48px;text-align:center;color:var(--text-lt);font-family:var(--font-data);font-size:13px;letter-spacing:0.06em">Loading contributors…</div>
+    </div>
+    <div style="text-align:center;padding:48px 0 0"><a href="get-involved.html" class="btn btn--primary">Join the Community →</a></div>
+  </div>
+</section>
+
+<footer class="site-footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><span class="footer-logo">Analyst Den</span><p>A Datavasity platform.</p></div><div class="footer-col"><p class="footer-col-title">Research</p><a href="research.html">Projects</a><a href="publications.html">Publications</a></div><div class="footer-col"><p class="footer-col-title">Community</p><a href="contributors.html">Contributors</a><a href="get-involved.html">Get Involved</a></div><div class="footer-col"><p class="footer-col-title">About</p><a href="about.html">About Us</a><a href="contact.html">Contact</a></div></div><div class="footer-bottom"><span>© 2026 Analyst Den by Datavasity</span><span>hello@analystden.org</span></div></div></footer>
+<script src="script.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyBzlCB74rpbd6o2vx7RbsfuIrkfOyhBUTQ",
+  authDomain:"analyst-den-3f9c9.firebaseapp.com",
+  projectId:"analyst-den-3f9c9",
+  storageBucket:"analyst-den-3f9c9.firebasestorage.app",
+  messagingSenderId:"438646500281",
+  appId:"1:438646500281:web:8a7c48d0ca882e2b5a6468"
+});
+const db = getFirestore(app);
+
+async function loadContributors(){
+  const grid = document.getElementById('contributors-grid');
+  if(!grid) return;
+  try {
+    const snap = await getDocs(collection(db,'contributors'));
+    const contribs = snap.docs.map(d=>({id:d.id,...d.data()}))
+      .filter(c => c.profileComplete === true)
+      .sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+
+    if(!contribs.length){
+      grid.innerHTML = '<div style="grid-column:1/-1;padding:56px;text-align:center;color:var(--text-lt);font-family:var(--font-data);font-size:13px;letter-spacing:0.06em">Contributors are being verified — check back soon.</div>';
+      return;
+    }
+
+    grid.innerHTML = contribs.map(c => `
+      <a href="contributor-profile.html?id=${c.id}" class="contributor-profile" style="text-decoration:none">
+        <div class="contributor-profile-avatar">
+          <img src="${c.avatar||'assets/avatars/contr-1.png'}" alt="${c.name||''}" onerror="this.src='assets/avatars/contr-1.png'"/>
+        </div>
+        <p class="contributor-profile-name">${c.name||'—'}</p>
+        <p class="contributor-profile-role">${c.role||''}</p>
+        <p class="t-label" style="margin-top:6px;font-size:10px">
+          ${Array.isArray(c.projects) ? c.projects.length : 0} Project(s)
+        </p>
+      </a>`).join('');
+
+    /* Search */
+    const search = document.querySelector('.search-input');
+    if(search){
+      search.addEventListener('input', e => {
+        const q = e.target.value.toLowerCase();
+        grid.querySelectorAll('.contributor-profile').forEach(card => {
+          const name = card.querySelector('.contributor-profile-name')?.textContent.toLowerCase()||'';
+          card.style.display = name.includes(q) ? '' : 'none';
+        });
+      });
+    }
+  } catch(e){
+    console.error('Contributors load error:', e);
+    grid.innerHTML = '<div style="grid-column:1/-1;padding:56px;text-align:center;color:var(--text-lt);font-family:var(--font-data);font-size:13px">Failed to load contributors.</div>';
+  }
+}
+
+loadContributors();
+</script>
+</body>
+</html>
