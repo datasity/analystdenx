@@ -122,6 +122,52 @@
 .t-body ul,.t-body ol{padding-left:1.5em;margin-bottom:1em}
 .t-body li{margin-bottom:0.4em;line-height:1.7}
 .t-body strong{font-weight:700}.t-body em{font-style:italic}
+
+/* ── LIVING DATA PULSE ── */
+.live-badge {
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--font-data);font-size:10px;font-weight:800;
+  letter-spacing:0.10em;text-transform:uppercase;
+  padding:5px 12px 5px 8px;
+  background:rgba(184,134,11,0.08);
+  border:1px solid rgba(184,134,11,0.3);
+  color:var(--gold);
+  position:relative;
+}
+.live-dot {
+  width:7px;height:7px;border-radius:50%;
+  background:var(--gold);
+  position:relative;
+  flex-shrink:0;
+}
+.live-dot::after {
+  content:'';
+  position:absolute;inset:-3px;border-radius:50%;
+  background:rgba(184,134,11,0.35);
+  animation:livePulse 3s ease-out infinite;
+}
+@keyframes livePulse {
+  0%  { transform:scale(0.8); opacity:0.9; }
+  60% { transform:scale(2.2); opacity:0; }
+  100%{ transform:scale(0.8); opacity:0; }
+}
+/* Subtle glow behind the countdown */
+.pd-hero-countdown {
+  position:relative;
+}
+.pd-hero-countdown::before {
+  content:'';
+  position:absolute;
+  left:-8px;top:-4px;right:-8px;bottom:-4px;
+  background:radial-gradient(ellipse, rgba(184,134,11,0.07) 0%, transparent 70%);
+  animation:glowPulse 4s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes glowPulse {
+  0%,100%{ opacity:0.4; }
+  50%    { opacity:1; }
+}
+
 </style>
 
 <style>
@@ -227,7 +273,10 @@
         <span class="pd-chip">Ogun State, Nigeria</span>
         <span class="pd-chip">March – May 2026</span>
         <span class="pd-chip">Field Research</span>
-        <span class="tag tag--active" style="font-size:10px;letter-spacing:0.08em">Active</span>
+        <span class="live-badge" id="status-badge">
+  <span class="live-dot"></span>
+  <span id="status-badge-text">Active</span>
+</span>
       </div>
       <div class="pd-hero-actions">
         <a href="get-involved.html" class="btn" style="background:transparent;color:#ffffff;border:1.5px solid rgba(255,255,255,0.7);font-family:var(--font-data);font-weight:700;font-size:12px;letter-spacing:0.10em;text-transform:uppercase;padding:13px 28px;">Become a Contributor</a>
@@ -453,6 +502,26 @@ async function loadProject(){
     // Smart stats
     const status=(p.status||'planned').toLowerCase();
     const isPlanned=status==='planned', isCompleted=status==='completed', isActive=status==='active'||status==='ongoing';
+
+    // Update live badge
+    const badge     = document.getElementById('status-badge');
+    const badgeText = document.getElementById('status-badge-text');
+    const liveDot   = document.querySelector('.live-dot');
+    if(badge && badgeText){
+      badgeText.textContent = p.status ? p.status.charAt(0).toUpperCase()+p.status.slice(1) : 'Active';
+      if(isCompleted){
+        // Completed — no pulse, muted style
+        badge.style.background = 'rgba(107,101,96,0.1)';
+        badge.style.borderColor = 'rgba(107,101,96,0.3)';
+        badge.style.color = 'var(--text-lt,#6B6560)';
+        if(liveDot) liveDot.style.background = '#6B6560';
+        if(liveDot) liveDot.style.setProperty('--pulse-color','rgba(107,101,96,0.3)');
+      } else if(isPlanned){
+        // Planned — gold but slower pulse
+        badge.style.animationDuration = '5s';
+      }
+      // Active/Ongoing keeps default gold fast pulse
+    }
     const s1=document.getElementById('stat-1'),s1l=document.getElementById('stat-1-label');
     const s2=document.getElementById('stat-2'),s2l=document.getElementById('stat-2-label');
     const s3=document.getElementById('stat-3'),s3l=document.getElementById('stat-3-label');
