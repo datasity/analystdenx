@@ -260,22 +260,22 @@
 ══════════════════════════════ -->
 <section>
   <div class="container">
-    <div class="data-numbers">
+    <div class="data-numbers" id="stats-strip">
       <div class="data-number-col">
-        <div class="data-number">1,240</div>
-        <div class="data-number-label">Survey Responses</div>
+        <div class="data-number" id="stat-1">—</div>
+        <div class="data-number-label" id="stat-1-label">Survey Responses</div>
       </div>
       <div class="data-number-col">
-        <div class="data-number">12</div>
-        <div class="data-number-label">LGA Coverage Areas</div>
+        <div class="data-number" id="stat-2">—</div>
+        <div class="data-number-label" id="stat-2-label">Coverage Area</div>
       </div>
       <div class="data-number-col">
-        <div class="data-number">72%</div>
-        <div class="data-number-label">Report High Transport Burden</div>
+        <div class="data-number" id="stat-3">—</div>
+        <div class="data-number-label" id="stat-3-label">Status</div>
       </div>
       <div class="data-number-col">
-        <div class="data-number">5</div>
-        <div class="data-number-label">Research Contributors</div>
+        <div class="data-number" id="stat-4">—</div>
+        <div class="data-number-label" id="stat-4-label">Contributors</div>
       </div>
     </div>
   </div>
@@ -524,8 +524,52 @@ async function loadProject(){
     }
 
     // Stats
-    const statNums = document.querySelectorAll('.data-number');
-    if(statNums[0] && p.responses) statNums[0].textContent = p.responses.toLocaleString();
+    // Smart stats based on project status
+    const status = (p.status||'planned').toLowerCase();
+    const isPlanned   = status === 'planned';
+    const isCompleted = status === 'completed';
+    const isActive    = status === 'active' || status === 'ongoing';
+
+    const s1 = document.getElementById('stat-1');
+    const s1l = document.getElementById('stat-1-label');
+    const s2 = document.getElementById('stat-2');
+    const s2l = document.getElementById('stat-2-label');
+    const s3 = document.getElementById('stat-3');
+    const s3l = document.getElementById('stat-3-label');
+    const s4 = document.getElementById('stat-4');
+    const s4l = document.getElementById('stat-4-label');
+
+    if(isPlanned){
+      // Planned project — show target/upcoming info
+      if(s1)  s1.textContent  = p.responses ? p.responses.toLocaleString() : 'TBD';
+      if(s1l) s1l.textContent = 'Target Responses';
+      if(s2)  s2.textContent  = p.location ? p.location.split(',')[0] : 'TBD';
+      if(s2l) s2l.textContent = 'Target Location';
+      if(s3)  s3.textContent  = p.period || 'Upcoming';
+      if(s3l) s3l.textContent = 'Planned Period';
+      if(s4)  s4.textContent  = '—';
+      if(s4l) s4l.textContent = 'Contributors (TBC)';
+    } else if(isCompleted){
+      // Completed — show final stats
+      if(s1)  s1.textContent  = p.responses ? p.responses.toLocaleString() : '—';
+      if(s1l) s1l.textContent = 'Survey Responses';
+      if(s2)  s2.textContent  = p.location ? p.location.split(',')[0] : '—';
+      if(s2l) s2l.textContent = 'Coverage Area';
+      if(s3)  s3.textContent  = 'Completed';
+      if(s3l) s3l.textContent = 'Project Status';
+      if(s4)  s4.textContent  = '—';
+      if(s4l) s4l.textContent = 'Research Contributors';
+    } else {
+      // Active/Ongoing — show live stats
+      if(s1)  s1.textContent  = p.responses ? p.responses.toLocaleString() : 'In Progress';
+      if(s1l) s1l.textContent = 'Survey Responses';
+      if(s2)  s2.textContent  = p.location ? p.location.split(',')[0] : '—';
+      if(s2l) s2l.textContent = 'Coverage Area';
+      if(s3)  s3.textContent  = p.period || '—';
+      if(s3l) s3l.textContent = 'Study Period';
+      if(s4)  s4.textContent  = '—';
+      if(s4l) s4l.textContent = 'Research Contributors';
+    }
 
     // Description
     const descEls = document.querySelectorAll('.t-body');
