@@ -546,7 +546,7 @@ tr:hover td{background:var(--bg)}
       <div class="field-row">
         <div class="field"><label>Survey Responses / Target</label><input type="number" id="proj-responses" placeholder="e.g. 1240"/></div>
         <div class="field"><label>Status</label>
-          <select id="proj-status">
+          <select id="proj-status" onchange="toggleFindingsFields(this.value)">
             <option value="ongoing">Ongoing</option>
             <option value="active">Active</option>
             <option value="planned">Planned</option>
@@ -618,6 +618,28 @@ tr:hover td{background:var(--bg)}
             <input type="file" id="proj-dataset-file" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleFileUpload(this,'proj-dataset','proj-dataset-btn','proj-dataset-prog','raw')"/>
           </div>
           <span class="upload-progress" id="proj-dataset-prog"></span>
+        </div>
+
+        <!-- KEY FINDINGS — shown when saving completed projects -->
+        <div id="findings-fields" style="border-top:1px solid var(--border);padding-top:18px;margin-top:6px;display:none">
+          <p style="font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:var(--gold);margin-bottom:14px">Key Findings Metrics <span style="font-weight:400;color:var(--text-lt)">(required for completed projects)</span></p>
+          <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px;align-items:center;margin-bottom:10px">
+            <input type="text" id="finding-1-metric" placeholder="e.g. 72%" style="padding:9px 12px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:14px;font-weight:700;color:var(--text);background:var(--bg);outline:none"/>
+            <input type="text" id="finding-1-label" placeholder="e.g. Report high transport burden" style="padding:9px 12px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none"/>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px;align-items:center;margin-bottom:10px">
+            <input type="text" id="finding-2-metric" placeholder="e.g. 58%" style="padding:9px 12px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:14px;font-weight:700;color:var(--text);background:var(--bg);outline:none"/>
+            <input type="text" id="finding-2-label" placeholder="e.g. Changed travel behaviour" style="padding:9px 12px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none"/>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px;align-items:center;margin-bottom:10px">
+            <input type="text" id="finding-3-metric" placeholder="e.g. 34%" style="padding:9px 12px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:14px;font-weight:700;color:var(--text);background:var(--bg);outline:none"/>
+            <input type="text" id="finding-3-label" placeholder="e.g. Spend over ₦15,000 monthly" style="padding:9px 12px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none"/>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px;align-items:center">
+            <input type="text" id="finding-4-metric" placeholder="e.g. 61%" style="padding:9px 12px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:14px;font-weight:700;color:var(--text);background:var(--bg);outline:none"/>
+            <input type="text" id="finding-4-label" placeholder="e.g. Use informal transport" style="padding:9px 12px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none"/>
+          </div>
+          <p style="font-size:11px;color:var(--text-xs);margin-top:10px">Left column: metric (e.g. 72%) · Right column: what it means</p>
         </div>
 
         <div class="field">
@@ -1174,7 +1196,7 @@ $('search-projects').oninput = e => {
 
 $('add-project-btn').onclick = () => {
   $('project-modal-title').textContent = 'Add Project';
-  ['project-id','proj-title','proj-location','proj-period','proj-desc','proj-quote','proj-writeup','proj-powerbi','proj-sponsor','proj-image','proj-pdf','proj-dataset','proj-methodology','proj-presentation'].forEach(id => $(id).value=''); ['proj-pdf-prog','proj-dataset-prog','proj-method-prog','proj-pptx-prog'].forEach(id => { const el=$(id); if(el) el.textContent=''; });
+  ['project-id','proj-title','proj-location','proj-period','proj-desc','proj-quote','proj-writeup','proj-powerbi','proj-sponsor','proj-image','proj-pdf','proj-dataset','proj-methodology','proj-presentation','finding-1-metric','finding-1-label','finding-2-metric','finding-2-label','finding-3-metric','finding-3-label','finding-4-metric','finding-4-label'].forEach(id => $(id).value=''); ['proj-pdf-prog','proj-dataset-prog','proj-method-prog','proj-pptx-prog'].forEach(id => { const el=$(id); if(el) el.textContent=''; });
   $('proj-responses').value=''; $('proj-category').value=''; $('proj-status').value='ongoing';
   if($('proj-sponsor-search')) $('proj-sponsor-search').value='';
   showModal('project-modal');
@@ -1226,6 +1248,12 @@ $('save-project-btn').onclick = async () => {
     quote:$('proj-quote').value.trim(),
     writeup:$('proj-writeup').value.trim(),
     powerbi:$('proj-powerbi').value.trim(),
+    findings: [
+      { metric: ($('finding-1-metric')?.value||'').trim(), label: ($('finding-1-label')?.value||'').trim() },
+      { metric: ($('finding-2-metric')?.value||'').trim(), label: ($('finding-2-label')?.value||'').trim() },
+      { metric: ($('finding-3-metric')?.value||'').trim(), label: ($('finding-3-label')?.value||'').trim() },
+      { metric: ($('finding-4-metric')?.value||'').trim(), label: ($('finding-4-label')?.value||'').trim() },
+    ].filter(f => f.metric),
     image:$('proj-image').value.trim(),
     pdf:$('proj-pdf').value.trim(),
     dataset:$('proj-dataset').value.trim(),
@@ -2071,6 +2099,13 @@ document.addEventListener('click', function(e){
     if(drop) drop.style.display = 'none';
   }
 });
+
+
+/* ── TOGGLE FINDINGS FIELDS ── */
+window.toggleFindingsFields = function(status){
+  const ff = document.getElementById('findings-fields');
+  if(ff) ff.style.display = (status === 'completed') ? 'block' : 'none';
+};
 
 </script>
 </body>
