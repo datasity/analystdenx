@@ -92,6 +92,7 @@
   font-size: 13px; color: #111111;
   letter-spacing: 0.01em;
 }
+@media(max-width:600px){#contributors-strip [style*="repeat(4"]{grid-template-columns:repeat(2,1fr)!important}}
 .pd-hero-imgcard img {
   width: 100%; height: auto;
   display: block;
@@ -121,145 +122,9 @@
 .t-body p{margin-bottom:1em;line-height:1.8}
 .t-body ul,.t-body ol{padding-left:1.5em;margin-bottom:1em}
 .t-body li{margin-bottom:0.4em;line-height:1.7}
-.t-body strong{font-weight:700}.t-body em{font-style:italic}
-
-/* ── LIVING DATA PULSE ── */
-.live-badge {
-  display:inline-flex;align-items:center;gap:6px;
-  font-family:var(--font-data);font-size:10px;font-weight:800;
-  letter-spacing:0.10em;text-transform:uppercase;
-  padding:5px 12px 5px 8px;
-  background:rgba(184,134,11,0.08);
-  border:1px solid rgba(184,134,11,0.3);
-  color:var(--gold);
-  position:relative;
-}
-.live-dot {
-  width:7px;height:7px;border-radius:50%;
-  background:var(--gold);
-  position:relative;
-  flex-shrink:0;
-}
-.live-dot::after {
-  content:'';
-  position:absolute;inset:-3px;border-radius:50%;
-  background:rgba(184,134,11,0.35);
-  animation:livePulse 3s ease-out infinite;
-}
-@keyframes livePulse {
-  0%  { transform:scale(0.8); opacity:0.9; }
-  60% { transform:scale(2.2); opacity:0; }
-  100%{ transform:scale(0.8); opacity:0; }
-}
-/* Subtle glow behind the countdown */
-.pd-hero-countdown {
-  position:relative;
-}
-.pd-hero-countdown::before {
-  content:'';
-  position:absolute;
-  left:-8px;top:-4px;right:-8px;bottom:-4px;
-  background:radial-gradient(ellipse, rgba(184,134,11,0.07) 0%, transparent 70%);
-  animation:glowPulse 4s ease-in-out infinite;
-  pointer-events:none;
-}
-@keyframes glowPulse {
-  0%,100%{ opacity:0.4; }
-  50%    { opacity:1; }
-}
-
-
-/* ══ PROJECT TIMELINE — Inline Section ══ */
-#timeline-section {
-  display:none;
-  background:var(--bg-alt,#EDEBE4);
-  border-top:1px solid var(--border,#D8D2C8);
-  border-bottom:1px solid var(--border,#D8D2C8);
-}
-#timeline-section.visible { display:block; }
-
-.tl-item {
-  display:grid;
-  grid-template-columns:56px 1fr;
-  gap:0;
-  border-bottom:1px solid var(--border,#D8D2C8);
-  background:var(--bg-alt,#EDEBE4);
-  transition:background 0.2s;
-}
-.tl-item:last-child { border-bottom:none; }
-.tl-item.done    { background:var(--bg-alt,#EDEBE4); }
-.tl-item.current { background:#fff; position:relative; }
-.tl-item.current::before {
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#B8860B;
-}
-.tl-item.pending { background:var(--bg-alt,#EDEBE4); }
-
-.tl-num {
-  padding:28px 0 28px 24px;
-  font-family:var(--font-data,'Barlow Condensed',sans-serif);
-  font-weight:800;font-size:13px;letter-spacing:0.04em;line-height:1;
-  border-right:1px solid var(--border,#D8D2C8);
-}
-.tl-item.done    .tl-num { color:#1F4D3A; }
-.tl-item.current .tl-num { color:#B8860B; }
-.tl-item.pending .tl-num { color:#C4BDB0; }
-
-.tl-content {
-  padding:28px 40px 28px 28px;
-}
-.tl-date {
-  font-family:var(--font-data,'Barlow Condensed',sans-serif);
-  font-size:11px;font-weight:700;letter-spacing:0.12em;
-  text-transform:uppercase;margin-bottom:6px;
-  display:flex;align-items:center;gap:8px;
-}
-.tl-item.done    .tl-date { color:#1F4D3A; }
-.tl-item.current .tl-date { color:#B8860B; }
-.tl-item.pending .tl-date { color:#B0A99F; }
-.tl-live-dot {
-  width:6px;height:6px;border-radius:50%;background:#B8860B;
-  display:inline-block;flex-shrink:0;
-  animation:tlAmberPulse 1.8s ease-in-out infinite;
-}
-@keyframes tlAmberPulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.6);opacity:0.6;}}
-.tl-check {
-  display:inline-flex;align-items:center;justify-content:center;
-  width:16px;height:16px;border-radius:50%;
-  background:#1F4D3A;color:#fff;font-size:9px;font-weight:900;flex-shrink:0;
-}
-.tl-title {
-  font-family:var(--font-display,'Cormorant Garamond',Georgia,serif);
-  font-weight:600;font-size:20px;line-height:1.15;margin-bottom:0;
-}
-.tl-item.done    .tl-title { color:#111; }
-.tl-item.current .tl-title { color:#111; }
-.tl-item.pending .tl-title { color:#9E9890; }
-.tl-desc {
-  font-family:var(--font-body,'Lora',Georgia,serif);
-  font-size:14px;line-height:1.72;margin-top:8px;
-}
-.tl-item.done    .tl-desc { color:#3A3832; }
-.tl-item.current .tl-desc { color:#3A3832; }
-.tl-item.pending .tl-desc { color:#B0A99F;font-style:italic; }
-
-/* Entrance animation */
-.tl-item {
-  opacity:0;transform:translateY(10px);
-  animation:tlIn 0.4s ease forwards;
-}
-@keyframes tlIn{to{opacity:1;transform:translateY(0);}}
-
-@media(max-width:600px){
-  .tl-num{padding:20px 0 20px 16px;font-size:12px;}
-  .tl-content{padding:20px 16px 20px 16px;}
-  .tl-title{font-size:17px;}
-  .tl-grid{grid-template-columns:44px 1fr;}
-}
-@media(max-width:600px){
-  #contributors-strip [style*="grid-template-columns:repeat(4"]{
-    grid-template-columns:repeat(2,1fr) !important;
-  }
-}
+.t-body strong{font-weight:700}
+@keyframes tlAmberPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.6);opacity:0.6}}
+@keyframes tlIn{to{opacity:1;transform:translateY(0)}}
 </style>
 
 <style>
@@ -365,14 +230,11 @@
         <span class="pd-chip">Ogun State, Nigeria</span>
         <span class="pd-chip">March – May 2026</span>
         <span class="pd-chip">Field Research</span>
-        <span class="live-badge" id="status-badge">
-  <span class="live-dot"></span>
-  <span id="status-badge-text">Active</span>
-</span>
+        <span class="tag tag--active" style="font-size:10px;letter-spacing:0.08em">Active</span>
       </div>
       <div class="pd-hero-actions">
         <a href="get-involved.html" class="btn" style="background:transparent;color:#ffffff;border:1.5px solid rgba(255,255,255,0.7);font-family:var(--font-data);font-weight:700;font-size:12px;letter-spacing:0.10em;text-transform:uppercase;padding:13px 28px;">Become a Contributor</a>
-        <button onclick="openTimeline()" class="btn btn--primary" id="timeline-btn">Project Timeline →</button>
+        <button onclick="window.openTimeline()" class="btn btn--primary" id="timeline-btn">Project Timeline →</button>
       </div>
       <p class="pd-hero-countdown">
         Next update in <span id="countdown-timer">Loading…</span>
@@ -381,26 +243,52 @@
 
     <!-- RIGHT: framed image card -->
     <div class="pd-hero-imgcard">
-      <img id="hero-project-img" src="assets/trans.png" alt="Project image"/>
+      <img id="hero-project-img" src="assets/trans.png" alt="Project image" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"/>
     </div>
 
   </div>
 </div>
 
-<!-- ══ TIMELINE SECTION (shown/hidden by button) ══ -->
-<section id="timeline-section" style="display:none;background:var(--bg-alt,#EDEBE4);border-top:3px solid #B8860B;border-bottom:1px solid var(--border,#D8D2C8)">
-  <div class="container" style="padding-top:0;padding-bottom:0">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 0;border-bottom:1px solid var(--border,#D8D2C8)">
-      <span class="eyebrow-text">Project Timeline</span>
-      <button onclick="closeTimeline()" style="background:none;border:1px solid var(--border,#D8D2C8);padding:7px 16px;font-family:var(--font-data);font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:var(--ink-lt,#6B6560);cursor:pointer;transition:all 0.2s">✕ Close</button>
+<!-- ══════════════════════════════
+     KEY NUMBERS
+══════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="data-numbers">
+      <div class="data-number-col">
+        <div class="data-number">1,240</div>
+        <div class="data-number-label">Survey Responses</div>
+      </div>
+      <div class="data-number-col">
+        <div class="data-number">12</div>
+        <div class="data-number-label">LGA Coverage Areas</div>
+      </div>
+      <div class="data-number-col">
+        <div class="data-number">72%</div>
+        <div class="data-number-label">Report High Transport Burden</div>
+      </div>
+      <div class="data-number-col">
+        <div class="data-number">5</div>
+        <div class="data-number-label">Research Contributors</div>
+      </div>
     </div>
-    <div id="timeline-track"></div>
   </div>
 </section>
 
 <!-- ══════════════════════════════
      OVERVIEW + METHODOLOGY
 ══════════════════════════════ -->
+<!-- Timeline section - shown when button clicked -->
+<section id="timeline-section" style="display:none;background:#EDEBE4;border-top:3px solid #B8860B;border-bottom:1px solid #D8D2C8">
+  <div class="container" style="padding-top:0;padding-bottom:0">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid #D8D2C8">
+      <span class="eyebrow-text">Project Timeline</span>
+      <button onclick="window.closeTimeline()" style="background:none;border:1px solid #D8D2C8;padding:7px 16px;font-family:var(--font-data);font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:#6B6560;cursor:pointer">✕ Close</button>
+    </div>
+    <div id="timeline-track"></div>
+  </div>
+</section>
+
 <section>
   <div class="container content-two-col">
     <div>
@@ -424,7 +312,7 @@
       </div>
       <div class="process-row" style="padding:20px 0">
         <div class="process-num">02</div>
-        <div class="process-content"><h3>Field Collection</h3><p>Face-to-face interviews conducted by trained field researchers across target local government areas.</p></div>
+        <div class="process-content"><h3>Field Collection</h3><p>1,240 face-to-face interviews across 12 LGAs, conducted by trained field researchers.</p></div>
       </div>
       <div class="process-row" style="padding:20px 0">
         <div class="process-num">03</div>
@@ -441,13 +329,30 @@
 <!-- ══════════════════════════════
      KEY FINDINGS
 ══════════════════════════════ -->
-<section id="findings-section" style="display:none;background:var(--bg-alt);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+<section style="background:var(--bg-alt);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
   <div class="container">
     <div class="section-eyebrow">
       <span class="eyebrow-text">Key Findings</span>
       <div class="eyebrow-line"></div>
     </div>
-    <div class="project-findings" id="findings-grid"></div>
+    <div class="project-findings">
+      <div class="finding-col">
+        <div class="finding-num">72%</div>
+        <div class="finding-label">Report increased transport burden</div>
+      </div>
+      <div class="finding-col">
+        <div class="finding-num">58%</div>
+        <div class="finding-label">Changed travel behaviour due to rising costs</div>
+      </div>
+      <div class="finding-col">
+        <div class="finding-num">34%</div>
+        <div class="finding-label">Spend over ₦15,000 monthly on transport</div>
+      </div>
+      <div class="finding-col">
+        <div class="finding-num">61%</div>
+        <div class="finding-label">Use informal transport as primary mode</div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -460,20 +365,45 @@
       <span class="eyebrow-text">Research Team</span>
       <div class="eyebrow-line"></div>
     </div>
-    <div class="contributors-strip" id="contributors-strip"></div>
+    <div id="contributors-strip"></div>
   </div>
 </section>
 
 <!-- ══════════════════════════════
      DOWNLOADS
 ══════════════════════════════ -->
-<section id="downloads-section" style="background:var(--bg-alt);border-top:1px solid var(--border)">
+<section style="background:var(--bg-alt);border-top:1px solid var(--border)">
   <div class="container">
     <div class="section-eyebrow">
       <span class="eyebrow-text">Downloads</span>
       <div class="eyebrow-line"></div>
     </div>
-    <div id="downloads-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border:1px solid var(--border)"></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border:1px solid var(--border)">
+      <a href="assets/report.pdf" class="pub-card" download style="text-decoration:none">
+        <span class="pub-tag">PDF Report</span>
+        <p class="pub-title">Full Research Report</p>
+        <p class="pub-meta">PDF · 2.4MB</p>
+        <span class="pub-download">↓ Download</span>
+      </a>
+      <div class="pub-card">
+        <span class="pub-tag">Dataset</span>
+        <p class="pub-title">Raw Survey Dataset</p>
+        <p class="pub-meta">CSV · 1.8MB</p>
+        <span class="pub-download">↓ Download</span>
+      </div>
+      <div class="pub-card">
+        <span class="pub-tag">Methodology</span>
+        <p class="pub-title">Research Methodology</p>
+        <p class="pub-meta">PDF · 1.2MB</p>
+        <span class="pub-download">↓ Download</span>
+      </div>
+      <div class="pub-card">
+        <span class="pub-tag">Presentation</span>
+        <p class="pub-title">Findings Deck</p>
+        <p class="pub-meta">PPTX · 3.2MB</p>
+        <span class="pub-download">↓ Download</span>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -546,7 +476,8 @@ const db = getFirestore(app);
 
 async function loadProject(){
   const id = new URLSearchParams(window.location.search).get('id');
-  if(!id) return;
+  if(!id) return; // no id = show default Transportation Cost Stress hardcoded content
+
   try {
     const snap = await getDoc(doc(db,'projects',id));
     if(!snap.exists()) return;
@@ -554,122 +485,121 @@ async function loadProject(){
 
     // Title
     document.querySelectorAll('h1').forEach(el => {
-      if(el.textContent.includes('Transportation Cost Stress') || el.textContent.includes('Ogun SME')) el.textContent = p.title||'';
+      if(el.textContent.includes('Transportation Cost Stress')) el.textContent = p.title||'';
     });
-    document.title = (p.title||'Project') + ' — Analyst Den';
-    storeTimelineData(p);
-    storeTimelineData(p);
+    document.title = `${p.title||'Project'} — Analyst Den`;
+    storeTL(p);
 
-    // Hero chips
+    // Hero eyebrow
+    const eyebrow = document.querySelector('.pd-hero-eyebrow');
+    if(eyebrow) eyebrow.textContent = 'Analyst Den Research Project';
+
+    // Meta chips
     const chips = document.querySelectorAll('.pd-chip');
     if(chips[0]) chips[0].textContent = p.location||'';
     if(chips[1]) chips[1].textContent = p.period||'';
     if(chips[2]) chips[2].textContent = 'Field Research';
 
-    // Status badge
-    const badge = document.getElementById('status-badge');
-    const badgeText = document.getElementById('status-badge-text');
-    if(badgeText) badgeText.textContent = p.status ? p.status.charAt(0).toUpperCase()+p.status.slice(1) : 'Active';
-
     // Image
-    if(p.image){
-      const imgEl = document.getElementById('hero-project-img');
-      if(imgEl) imgEl.src = p.image;
-    }
+    if(p.image){ const imgEl=document.getElementById('hero-project-img'); if(imgEl) imgEl.src=p.image; }
 
-    // Description + writeup
+    // Stats
+    const statNums = document.querySelectorAll('.data-number');
+    if(statNums[0] && p.responses) statNums[0].textContent = p.responses.toLocaleString();
+
+    // Description
     const descEls = document.querySelectorAll('.t-body');
     if(descEls[0] && p.description) descEls[0].innerHTML = p.description;
-    if(descEls[1] && p.writeup) descEls[1].innerHTML = p.writeup;
+    if(descEls[1] && p.writeup)     descEls[1].innerHTML = p.writeup;
 
     // Pull quote
     const quoteEl = document.querySelector('.pull-quote');
-    if(quoteEl && p.quote){
-      const tmp = document.createElement('div'); tmp.innerHTML = p.quote;
-      quoteEl.textContent = '"'+(tmp.textContent||p.quote)+'"';
-    }
+    if(quoteEl && p.quote) quoteEl.textContent = `"${p.quote}"`;
 
-    // Status
-    const status = (p.status||'planned').toLowerCase();
-    const isPlanned = status==='planned';
-    const isCompleted = status==='completed';
-
-    // Key findings — completed only
-    const findSec = document.getElementById('findings-section');
-    const findGrid = document.getElementById('findings-grid');
-    if(isCompleted && p.findings && p.findings.length && findSec && findGrid){
-      findSec.style.display = 'block';
-      findGrid.innerHTML = p.findings.map(f=>`<div class="finding-col"><div class="finding-num">${f.metric||'—'}</div><div class="finding-label">${f.label||''}</div></div>`).join('');
-    }
+    // Downloads
+    const dlLinks = {
+      pdf:          document.querySelector('a[download].pub-card'),
+      dataset:      null,
+      methodology:  null,
+      presentation: null
+    };
 
     // Power BI button
     const pbiBtnWrap = document.getElementById('pbi-btn-wrap');
     if(pbiBtnWrap){
-      pbiBtnWrap.innerHTML = p.powerbi
-        ? `<button onclick="openPBI('${p.powerbi}','${(p.title||'').replace(/'/g,"\'")} — Dashboard')" class="btn btn--primary" style="display:inline-flex;align-items:center;gap:8px">📊 View Interactive Dashboard</button>`
-        : '';
+      if(p.powerbi){
+        pbiBtnWrap.innerHTML = `
+          <button onclick="openPBI('${p.powerbi}','${(p.title||'').replace(/'/g,"\'")} — Dashboard')"
+            class="btn btn--primary" style="display:inline-flex;align-items:center;gap:8px">
+            📊 View Interactive Dashboard
+          </button>`;
+      } else {
+        pbiBtnWrap.innerHTML = '';
+      }
     }
 
-    // Downloads
-    const dlGrid = document.getElementById('downloads-grid');
-    if(dlGrid){
-      const files = [
-        {tag:'PDF Report',   title:'Full Research Report', url:p.pdf,          ext:'PDF'},
-        {tag:'Dataset',      title:'Raw Survey Dataset',   url:p.dataset,       ext:'CSV/Excel'},
-        {tag:'Methodology',  title:'Research Methodology', url:p.methodology,   ext:'PDF'},
-        {tag:'Presentation', title:'Findings Deck',        url:p.presentation,  ext:'PPTX'},
-      ];
-      dlGrid.innerHTML = files.map(f=>`
-        <div class="pub-card" style="${!f.url?'opacity:0.5':''}">
-          <span class="pub-tag">${f.tag}</span>
-          <p class="pub-title">${f.title}</p>
-          <p class="pub-meta">${f.url?f.ext:'Not yet available'}</p>
-          ${f.url?`<a href="${f.url}" class="pub-download" target="_blank" download>↓ Download</a>`:`<span class="pub-download" style="color:var(--text-lt);cursor:default">Not Available</span>`}
-        </div>`).join('');
+    // Update download cards
+    const pubCards = document.querySelectorAll('.pub-card');
+    if(pubCards[0] && p.pdf){
+      pubCards[0].href = p.pdf;
+      pubCards[0].style.opacity = '1';
+    }
+    if(pubCards[1] && p.dataset){
+      pubCards[1].href = p.dataset;
+      pubCards[1].style.opacity = '1';
+      pubCards[1].setAttribute('href', p.dataset);
+      const dl = pubCards[1].querySelector('.pub-download');
+      if(dl) dl.textContent = '↓ Download';
+    }
+    if(pubCards[2] && p.methodology){
+      pubCards[2].href = p.methodology;
+      pubCards[2].style.opacity = '1';
+      const dl = pubCards[2].querySelector('.pub-download');
+      if(dl) dl.textContent = '↓ Download';
+    }
+    if(pubCards[3] && p.presentation){
+      pubCards[3].href = p.presentation;
+      pubCards[3].style.opacity = '1';
+      const dl = pubCards[3].querySelector('.pub-download');
+      if(dl) dl.textContent = '↓ Download';
     }
 
-    // Research team — load contributors assigned to this project
-    const teamSec = document.getElementById('team-section');
-    const strip = document.getElementById('contributors-strip');
-    if(teamSec && strip && p.title){
-      const cSnap = await getDocs(collection(db,'contributors'));
-      const assigned = cSnap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>{
-        if(!Array.isArray(c.projects)) return false;
-        const title = (p.title||'').toLowerCase();
-        return c.projects.some(pr=>{
-          const pr2 = (pr||'').toLowerCase();
-          return title.includes(pr2.substring(0,8)) || pr2.includes(title.substring(0,8));
-        });
-      });
+    // Load contributors assigned to this project
+    if(p.title){
+      const contribSnap = await getDocs(collection(db,'contributors'));
+      const assigned = contribSnap.docs.map(d=>({id:d.id,...d.data()}))
+        .filter(c => Array.isArray(c.projects) && c.projects.some(proj =>
+          proj.toLowerCase().includes(p.title.toLowerCase().substring(0,10))
+        ));
 
-      if(assigned.length){
+      const teamSec = document.getElementById('team-section');
+      const strip = document.getElementById('contributors-strip');
+      if(assigned.length && teamSec && strip){
         teamSec.style.display = 'block';
-        var SHOW = 4;
-        var showAll = false;
-        function buildTeamGrid(){
+        strip.innerHTML = '';
+        var SHOW = 4; var showAll = false;
+        function buildGrid(){
           strip.innerHTML = '';
-          var visible = showAll ? assigned : assigned.slice(0, SHOW);
-          var grid = document.createElement('div');
-          grid.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#D8D2C8;border:1px solid #D8D2C8';
-          grid.innerHTML = visible.map(function(c,i){
-            var initials = (c.name||'?').split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2).toUpperCase();
+          var vis = showAll ? assigned : assigned.slice(0,SHOW);
+          var g = document.createElement('div');
+          g.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#D8D2C8;border:1px solid #D8D2C8';
+          g.innerHTML = vis.map(function(c,i){
+            var ini = (c.name||'?').split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2).toUpperCase();
             var av = c.avatar
-              ? '<img src="'+c.avatar+'" alt="'+(c.name||'')+'" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid #D8D2C8;display:block;margin:0 auto 14px" onerror="this.style.display='none';this.nextSibling.style.display='flex'"/><div style="display:none;width:72px;height:72px;border-radius:50%;background:#EDEBE4;border:2px solid #D8D2C8;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#6B6560;margin:0 auto 14px">'+initials+'</div>'
-              : '<div style="display:flex;width:72px;height:72px;border-radius:50%;background:#EDEBE4;border:2px solid #D8D2C8;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#6B6560;margin:0 auto 14px">'+initials+'</div>';
-            return '<div style="background:#F6F3ED;padding:28px 12px 20px;text-align:center;transition:background 0.2s">'+av+'<div style="font-family:Georgia,serif;font-weight:600;font-size:15px;color:#111;margin-bottom:5px">'+(c.name||'—')+'</div><div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#6B6560">'+(c.role||'')+'</div></div>';
+              ? '<img src="'+c.avatar+'" alt="'+(c.name||'')+'" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid #D8D2C8;display:block;margin:0 auto 12px" onerror="this.style.display='none';this.nextSibling.style.display='flex'"/><div style="display:none;width:72px;height:72px;border-radius:50%;background:#EDEBE4;border:2px solid #D8D2C8;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#6B6560;margin:0 auto 12px">'+ini+'</div>'
+              : '<div style="display:flex;width:72px;height:72px;border-radius:50%;background:#EDEBE4;border:2px solid #D8D2C8;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#6B6560;margin:0 auto 12px">'+ini+'</div>';
+            return '<div style="background:#F6F3ED;padding:24px 12px 20px;text-align:center;transition:background 0.2s" onmouseover="this.style.background='#fff'" onmouseout="this.style.background='#F6F3ED'">'+av+'<div style="font-family:var(--font-display,Georgia,serif);font-weight:600;font-size:15px;color:#111;margin-bottom:4px">'+(c.name||'—')+'</div><div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#6B6560">'+(c.role||'')+'</div></div>';
           }).join('');
-          strip.appendChild(grid);
+          strip.appendChild(g);
           if(assigned.length > SHOW){
-            var btnWrap = document.createElement('div');
-            btnWrap.style.cssText = 'text-align:center;padding:20px';
-            btnWrap.innerHTML = '<button onclick="window._teamToggle()" style="background:none;border:1.5px solid #D8D2C8;padding:9px 28px;font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:#6B6560;cursor:pointer">'+(showAll?'↑ Show Less':'See All '+assigned.length+' Contributors ↓')+'</button>';
-            strip.appendChild(btnWrap);
+            var bw = document.createElement('div');
+            bw.style.cssText = 'text-align:center;padding:20px';
+            bw.innerHTML = '<button onclick="window._tg()" style="background:none;border:1.5px solid #D8D2C8;padding:9px 28px;font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:#6B6560;cursor:pointer">'+(showAll?'↑ Show Less':'See All '+assigned.length+' Contributors ↓')+'</button>';
+            strip.appendChild(bw);
           }
         }
-        window._teamToggle = function(){ showAll=!showAll; buildTeamGrid(); };
-        buildTeamGrid();
-      } else {
-        teamSec.style.display = 'none';
+        window._tg = function(){ showAll=!showAll; buildGrid(); };
+        buildGrid();
       }
     }
 
@@ -704,61 +634,60 @@ document.getElementById('pbi-modal')?.addEventListener('click', function(e){
 // Close on Escape key
 document.addEventListener('keydown', e => { if(e.key==='Escape') closePBI(); });
 
-/* ══ TIMELINE JS ══ */
-var _timelineData = null;
-function storeTimelineData(p){ _timelineData = p; }
+</script>
+
+<script>
+var _tlData = null;
+function storeTL(p){ _tlData = p; }
 
 window.openTimeline = function(){
   var sec = document.getElementById('timeline-section');
   if(!sec) return;
-  if(_timelineData) renderTimeline(_timelineData);
+  if(_tlData) renderTL(_tlData);
   sec.style.display = 'block';
   setTimeout(function(){
     var top = sec.getBoundingClientRect().top + window.pageYOffset - 80;
-    window.scrollTo({ top: top, behavior: 'smooth' });
+    window.scrollTo({top:top, behavior:'smooth'});
   }, 60);
   var btn = document.getElementById('timeline-btn');
-  if(btn){ btn.textContent = 'Hide Timeline ↑'; btn.onclick = function(){ window.closeTimeline(); }; }
+  if(btn){ btn.textContent = 'Hide Timeline ↑'; btn.onclick = window.closeTimeline; }
 };
 
 window.closeTimeline = function(){
   var sec = document.getElementById('timeline-section');
   if(sec) sec.style.display = 'none';
   var btn = document.getElementById('timeline-btn');
-  if(btn){ btn.textContent = 'Project Timeline →'; btn.onclick = function(){ window.openTimeline(); }; }
+  if(btn){ btn.textContent = 'Project Timeline →'; btn.onclick = window.openTimeline; }
 };
 
-function renderTimeline(p){
+function renderTL(p){
   var track = document.getElementById('timeline-track');
   if(!track) return;
-  var defaults = [
+  var def = [
     {label:'Project Approved', description:'Project formally approved and added to the Analyst Den research pipeline.'},
     {label:'Field Research Begins', description:'Field researchers deployed to target locations to begin data collection.'},
     {label:'Data Collection Complete', description:'All survey responses collected and raw data secured for cleaning.'},
     {label:'Analysis Phase', description:'Data cleaned, validated and analysed using Power BI and Python.'},
     {label:'Report Published', description:'Findings published as a public insights report with downloadable PDF.'}
   ];
-  var milestones = (p.timeline && p.timeline.length) ? p.timeline : defaults.map(function(m){ return {label:m.label,description:m.description,date:''}; });
+  var ms = (p.timeline && p.timeline.length) ? p.timeline : def.map(function(m){return{label:m.label,description:m.description,date:''};});
   var today = new Date(); today.setHours(0,0,0,0);
-  var foundCurrent = false;
-  track.innerHTML = milestones.map(function(m,i){
-    var hasDate = m.date && m.date.trim();
-    var mDate = hasDate ? new Date(m.date) : null;
-    var state = (mDate && mDate <= today) ? 'done' : (!foundCurrent ? (foundCurrent=true, 'current') : 'pending');
+  var fc = false;
+  track.innerHTML = ms.map(function(m,i){
+    var hd = m.date && m.date.trim();
+    var md = hd ? new Date(m.date) : null;
+    var st = (md && md<=today) ? 'done' : (!fc ? (fc=true,'current') : 'pending');
     var num = ('0'+(i+1)).slice(-2);
-    var ds = hasDate ? new Date(m.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}).toUpperCase() : (state==='current'?'IN PROGRESS':'SCHEDULED');
-    var dHtml = state==='done' ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#1F4D3A;color:#fff;font-size:9px;font-weight:900;margin-right:6px">✓</span>'+ds : state==='current' ? '<span style="width:6px;height:6px;border-radius:50%;background:#B8860B;display:inline-block;margin-right:6px;animation:tlAmberPulse 1.8s ease-in-out infinite"></span>'+ds : ds;
-    var nc = state==='done'?'#1F4D3A':state==='current'?'#B8860B':'#C4BDB0';
-    var dc = state==='done'?'#1F4D3A':state==='current'?'#B8860B':'#B0A99F';
-    var tc = state==='pending'?'#9E9890':'#111';
-    var bg = state==='current'?'background:#fff;border-top:3px solid #B8860B;':'background:#EDEBE4;';
-    return '<div style="display:grid;grid-template-columns:56px 1fr;border-bottom:1px solid #D8D2C8;'+bg+'animation:tlIn 0.4s ease '+(i*80)+'ms both"><div style="padding:28px 0 28px 24px;font-weight:800;font-size:13px;border-right:1px solid #D8D2C8;color:'+nc+'">'+num+'</div><div style="padding:28px 40px 28px 28px"><div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;color:'+dc+';display:flex;align-items:center">'+dHtml+'</div><div style="font-family:Georgia,serif;font-weight:600;font-size:20px;color:'+tc+'">'+m.label+'</div>'+(m.description?'<div style="font-size:14px;line-height:1.72;margin-top:8px;color:'+(state==='pending'?'#B0A99F':'#3A3832')+';'+(state==='pending'?'font-style:italic':'')+'">'+(m.description||'')+'</div>':'')+'</div></div>';
+    var ds = hd ? new Date(m.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}).toUpperCase() : (st==='current'?'IN PROGRESS':'SCHEDULED');
+    var dh = st==='done' ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#1F4D3A;color:#fff;font-size:9px;font-weight:900;margin-right:6px">✓</span>'+ds : st==='current' ? '<span style="width:6px;height:6px;border-radius:50%;background:#B8860B;display:inline-block;margin-right:6px;animation:tlAmberPulse 1.8s ease-in-out infinite"></span>'+ds : ds;
+    var nc=st==='done'?'#1F4D3A':st==='current'?'#B8860B':'#C4BDB0';
+    var dc=st==='done'?'#1F4D3A':st==='current'?'#B8860B':'#B0A99F';
+    var tc=st==='pending'?'#9E9890':'#111';
+    var bg=st==='current'?'background:#fff;border-top:3px solid #B8860B;':'background:#EDEBE4;';
+    var desc=m.description||m.desc||'';
+    return '<div style="display:grid;grid-template-columns:56px 1fr;border-bottom:1px solid #D8D2C8;'+bg+'"><div style="padding:28px 0 28px 24px;font-weight:800;font-size:13px;letter-spacing:0.04em;border-right:1px solid #D8D2C8;color:'+nc+'">'+num+'</div><div style="padding:28px 40px 28px 28px"><div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;color:'+dc+';display:flex;align-items:center">'+dh+'</div><div style="font-family:Georgia,serif;font-weight:600;font-size:20px;color:'+tc+'">'+m.label+'</div>'+(desc?'<div style="font-size:14px;line-height:1.72;margin-top:8px;color:'+(st==='pending'?'#B0A99F':'#3A3832')+';'+(st==='pending'?'font-style:italic':'')+'">'+(desc)+'</div>':'')+'</div></div>';
   }).join('');
 }
-
 </script>
-
-
-
 </body>
 </html>
