@@ -179,8 +179,10 @@
   background:rgba(0,0,0,0.55);pointer-events:all;
 }
 .timeline-drawer {
-  position:fixed;top:0;left:0;bottom:0;
+  position:fixed;top:0;left:0;
   width:min(540px,96vw);
+  height:100%;
+  height:100dvh;
   background:#F6F3ED;
   z-index:801;
   transform:translateX(-100%);
@@ -216,7 +218,12 @@
 .timeline-close:hover { background:rgba(255,255,255,0.2); }
 
 .timeline-body {
-  flex:1;overflow-y:auto;padding:0;
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:0;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
 }
 
 /* ── MILESTONE CARDS — no line, pure editorial ── */
@@ -782,16 +789,29 @@ async function loadProject(){
 let _timelineData = null;
 
 window.openTimeline = function(){
+  // Save scroll position before locking
+  window._scrollY = window.scrollY;
+  document.body.style.position = 'fixed';
+  document.body.style.top = '-' + window._scrollY + 'px';
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.overflow = 'hidden';
   document.getElementById('timeline-overlay').classList.add('open');
   document.getElementById('timeline-drawer').classList.add('open');
-  document.body.style.overflow = 'hidden';
   if(_timelineData) renderTimeline(_timelineData);
 };
 
 window.closeTimeline = function(){
   document.getElementById('timeline-overlay').classList.remove('open');
   document.getElementById('timeline-drawer').classList.remove('open');
+  // Restore body and scroll position
+  const scrollY = window._scrollY || 0;
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
   document.body.style.overflow = '';
+  window.scrollTo(0, scrollY);
 };
 
 // Close on Escape
