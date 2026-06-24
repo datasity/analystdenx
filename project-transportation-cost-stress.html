@@ -92,14 +92,11 @@
   font-size: 13px; color: #111111;
   letter-spacing: 0.01em;
 }
-@media(max-width:600px){#contributors-strip [style*="repeat(4"]{grid-template-columns:repeat(2,1fr)!important}}
 .pd-hero-imgcard img {
-  width: 100%;
-  height: auto;
-  min-height: 200px;
+  width: 100%; height: auto;
   display: block;
-  object-fit: cover;
-  object-position: center;
+  object-fit: contain;
+  object-position: center top;
   background: #f5f5f0;
 }
 
@@ -120,13 +117,6 @@
   .pd-hero-text { padding: 36px 0 24px }
   .pd-hero-text h1 { font-size: clamp(28px, 8vw, 40px) }
 }
-.t-body h2,.t-body h3{font-family:var(--font-display);font-weight:600;margin:1em 0 0.5em}
-.t-body p{margin-bottom:1em;line-height:1.8}
-.t-body ul,.t-body ol{padding-left:1.5em;margin-bottom:1em}
-.t-body li{margin-bottom:0.4em;line-height:1.7}
-.t-body strong{font-weight:700}
-@keyframes tlAmberPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.6);opacity:0.6}}
-@keyframes tlIn{to{opacity:1;transform:translateY(0)}}
 </style>
 
 <style>
@@ -236,7 +226,7 @@
       </div>
       <div class="pd-hero-actions">
         <a href="get-involved.html" class="btn" style="background:transparent;color:#ffffff;border:1.5px solid rgba(255,255,255,0.7);font-family:var(--font-data);font-weight:700;font-size:12px;letter-spacing:0.10em;text-transform:uppercase;padding:13px 28px;">Become a Contributor</a>
-        <button onclick="window.openTimeline()" class="btn btn--primary" id="timeline-btn">Project Timeline →</button>
+        <a href="assets/report.pdf" class="btn btn--primary" download>Download Report (PDF)</a>
       </div>
       <p class="pd-hero-countdown">
         Next update in <span id="countdown-timer">Loading…</span>
@@ -245,7 +235,11 @@
 
     <!-- RIGHT: framed image card -->
     <div class="pd-hero-imgcard">
-      <img id="hero-project-img" src="assets/trans.png" alt="Project image" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"/>
+      <div class="pd-hero-imgcard-title">
+        <span class="pd-hero-imgcard-icon">🚌</span>
+        <span class="pd-hero-imgcard-label">Transportation Cost Stress</span>
+      </div>
+      <img src="assets/trans.png" alt="Transportation Cost Stress — field research illustration, Ogun State Nigeria"/>
     </div>
 
   </div>
@@ -280,17 +274,6 @@
 <!-- ══════════════════════════════
      OVERVIEW + METHODOLOGY
 ══════════════════════════════ -->
-<!-- Timeline section - shown when button clicked -->
-<section id="timeline-section" style="display:none;background:#EDEBE4;border-top:3px solid #B8860B;border-bottom:1px solid #D8D2C8">
-  <div class="container" style="padding-top:0;padding-bottom:0">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid #D8D2C8">
-      <span class="eyebrow-text">Project Timeline</span>
-      <button onclick="window.closeTimeline()" style="background:none;border:1px solid #D8D2C8;padding:7px 16px;font-family:var(--font-data);font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:#6B6560;cursor:pointer">✕ Close</button>
-    </div>
-    <div id="timeline-track"></div>
-  </div>
-</section>
-
 <section>
   <div class="container content-two-col">
     <div>
@@ -361,13 +344,34 @@
 <!-- ══════════════════════════════
      RESEARCH TEAM
 ══════════════════════════════ -->
-<section id="team-section" style="display:none">
+<section>
   <div class="container">
     <div class="section-eyebrow">
       <span class="eyebrow-text">Research Team</span>
       <div class="eyebrow-line"></div>
     </div>
-    <div id="contributors-strip"></div>
+    <div class="contributors-strip">
+      <div class="contributor-col">
+        <div class="contributor-avatar"><img src="assets/avatars/contr-1.png" alt="Ayo Adewale"/></div>
+        <p class="contributor-name">Ayo Adewale</p>
+        <p class="contributor-role">Lead Analyst</p>
+      </div>
+      <div class="contributor-col">
+        <div class="contributor-avatar"><img src="assets/avatars/contr-2.png" alt="Tosin Bello"/></div>
+        <p class="contributor-name">Tosin Bello</p>
+        <p class="contributor-role">Research Lead</p>
+      </div>
+      <div class="contributor-col">
+        <div class="contributor-avatar"><img src="assets/avatars/contr-1.png" alt="Ibrahim Musa"/></div>
+        <p class="contributor-name">Ibrahim Musa</p>
+        <p class="contributor-role">Data Engineer</p>
+      </div>
+      <div class="contributor-col">
+        <div class="contributor-avatar"><img src="assets/avatars/contr-2.png" alt="Funke Ogun"/></div>
+        <p class="contributor-name">Funke Ogun</p>
+        <p class="contributor-role">Insights Analyst</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -490,7 +494,6 @@ async function loadProject(){
       if(el.textContent.includes('Transportation Cost Stress')) el.textContent = p.title||'';
     });
     document.title = `${p.title||'Project'} — Analyst Den`;
-    storeTL(p);
 
     // Hero eyebrow
     const eyebrow = document.querySelector('.pd-hero-eyebrow');
@@ -503,16 +506,11 @@ async function loadProject(){
     if(chips[2]) chips[2].textContent = 'Field Research';
 
     // Image
-    // Project image
-    const imgEl = document.getElementById('hero-project-img');
-    if(imgEl){
-      if(p.image){
-        imgEl.src = p.image;
-        imgEl.alt = p.title||'Project image';
-        imgEl.onerror = function(){ this.src = 'assets/trans.png'; };
-      }
-      // Always make image visible
-      imgEl.style.display = 'block';
+    if(p.image){
+      const imgEl = document.querySelector('.pd-hero-imgcard img');
+      if(imgEl) imgEl.src = p.image;
+      const cardLabel = document.querySelector('.pd-hero-imgcard-label');
+      if(cardLabel) cardLabel.textContent = p.title||'';
     }
 
     // Stats
@@ -521,8 +519,8 @@ async function loadProject(){
 
     // Description
     const descEls = document.querySelectorAll('.t-body');
-    if(descEls[0] && p.description) descEls[0].innerHTML = p.description;
-    if(descEls[1] && p.writeup)     descEls[1].innerHTML = p.writeup;
+    if(descEls[0] && p.description) descEls[0].textContent = p.description;
+    if(descEls[1] && p.writeup)     descEls[1].textContent = p.writeup;
 
     // Pull quote
     const quoteEl = document.querySelector('.pull-quote');
@@ -579,51 +577,23 @@ async function loadProject(){
     // Load contributors assigned to this project
     if(p.title){
       const contribSnap = await getDocs(collection(db,'contributors'));
-      const pTitle = (p.title||'').toLowerCase().trim();
       const assigned = contribSnap.docs.map(d=>({id:d.id,...d.data()}))
-        .filter(c => {
-          if(!Array.isArray(c.projects) || !c.projects.length) return false;
-          return c.projects.some(proj => {
-            const pr = (proj||'').toLowerCase().trim();
-            // Match by: exact title, title starts with proj, proj starts with title, or shared 6+ char substring
-            return pr === pTitle
-              || pTitle.startsWith(pr.substring(0,6))
-              || pr.startsWith(pTitle.substring(0,6))
-              || (pTitle.length > 5 && pr.includes(pTitle.substring(0,6)))
-              || (pr.length > 5 && pTitle.includes(pr.substring(0,6)));
-          });
-        });
+        .filter(c => Array.isArray(c.projects) && c.projects.some(proj =>
+          proj.toLowerCase().includes(p.title.toLowerCase().substring(0,10))
+        ));
 
-      const teamSec = document.getElementById('team-section');
-      const strip = document.getElementById('contributors-strip');
-      // Debug: log what we found
-      console.log('Project title:', p.title, '| Contributors found:', assigned.length, '| All contributors:', contribSnap.docs.length);
-      if(assigned.length && teamSec && strip){
-        teamSec.style.display = 'block';
-        strip.innerHTML = '';
-        var SHOW = 4; var showAll = false;
-        function buildGrid(){
-          strip.innerHTML = '';
-          var vis = showAll ? assigned : assigned.slice(0,SHOW);
-          var g = document.createElement('div');
-          g.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#D8D2C8;border:1px solid #D8D2C8';
-          g.innerHTML = vis.map(function(c,i){
-            var ini = (c.name||'?').split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2).toUpperCase();
-            var av = c.avatar
-              ? '<img src="'+c.avatar+'" alt="'+(c.name||'')+'" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid #D8D2C8;display:block;margin:0 auto 12px" onerror="this.style.display='none';this.nextSibling.style.display='flex'"/><div style="display:none;width:72px;height:72px;border-radius:50%;background:#EDEBE4;border:2px solid #D8D2C8;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#6B6560;margin:0 auto 12px">'+ini+'</div>'
-              : '<div style="display:flex;width:72px;height:72px;border-radius:50%;background:#EDEBE4;border:2px solid #D8D2C8;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#6B6560;margin:0 auto 12px">'+ini+'</div>';
-            return '<div style="background:#F6F3ED;padding:24px 12px 20px;text-align:center;transition:background 0.2s" onmouseover="this.style.background='#fff'" onmouseout="this.style.background='#F6F3ED'">'+av+'<div style="font-family:var(--font-display,Georgia,serif);font-weight:600;font-size:15px;color:#111;margin-bottom:4px">'+(c.name||'—')+'</div><div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#6B6560">'+(c.role||'')+'</div></div>';
-          }).join('');
-          strip.appendChild(g);
-          if(assigned.length > SHOW){
-            var bw = document.createElement('div');
-            bw.style.cssText = 'text-align:center;padding:20px';
-            bw.innerHTML = '<button onclick="window._tg()" style="background:none;border:1.5px solid #D8D2C8;padding:9px 28px;font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:#6B6560;cursor:pointer">'+(showAll?'↑ Show Less':'See All '+assigned.length+' Contributors ↓')+'</button>';
-            strip.appendChild(bw);
-          }
+      if(assigned.length){
+        const strip = document.querySelector('.contributors-strip');
+        if(strip){
+          strip.innerHTML = assigned.map(c => `
+            <div class="contributor-col">
+              <div class="contributor-avatar">
+                <img src="${c.avatar||'assets/avatars/contr-1.png'}" alt="${c.name||''}" onerror="this.src='assets/avatars/contr-1.png'"/>
+              </div>
+              <p class="contributor-name">${c.name||'—'}</p>
+              <p class="contributor-role">${c.role||''}</p>
+            </div>`).join('');
         }
-        window._tg = function(){ showAll=!showAll; buildGrid(); };
-        buildGrid();
       }
     }
 
@@ -658,60 +628,6 @@ document.getElementById('pbi-modal')?.addEventListener('click', function(e){
 // Close on Escape key
 document.addEventListener('keydown', e => { if(e.key==='Escape') closePBI(); });
 
-</script>
-
-<script>
-var _tlData = null;
-function storeTL(p){ _tlData = p; }
-
-window.openTimeline = function(){
-  var sec = document.getElementById('timeline-section');
-  if(!sec) return;
-  if(_tlData) renderTL(_tlData);
-  sec.style.display = 'block';
-  setTimeout(function(){
-    var top = sec.getBoundingClientRect().top + window.pageYOffset - 80;
-    window.scrollTo({top:top, behavior:'smooth'});
-  }, 60);
-  var btn = document.getElementById('timeline-btn');
-  if(btn){ btn.textContent = 'Hide Timeline ↑'; btn.onclick = window.closeTimeline; }
-};
-
-window.closeTimeline = function(){
-  var sec = document.getElementById('timeline-section');
-  if(sec) sec.style.display = 'none';
-  var btn = document.getElementById('timeline-btn');
-  if(btn){ btn.textContent = 'Project Timeline →'; btn.onclick = window.openTimeline; }
-};
-
-function renderTL(p){
-  var track = document.getElementById('timeline-track');
-  if(!track) return;
-  var def = [
-    {label:'Project Approved', description:'Project formally approved and added to the Analyst Den research pipeline.'},
-    {label:'Field Research Begins', description:'Field researchers deployed to target locations to begin data collection.'},
-    {label:'Data Collection Complete', description:'All survey responses collected and raw data secured for cleaning.'},
-    {label:'Analysis Phase', description:'Data cleaned, validated and analysed using Power BI and Python.'},
-    {label:'Report Published', description:'Findings published as a public insights report with downloadable PDF.'}
-  ];
-  var ms = (p.timeline && p.timeline.length) ? p.timeline : def.map(function(m){return{label:m.label,description:m.description,date:''};});
-  var today = new Date(); today.setHours(0,0,0,0);
-  var fc = false;
-  track.innerHTML = ms.map(function(m,i){
-    var hd = m.date && m.date.trim();
-    var md = hd ? new Date(m.date) : null;
-    var st = (md && md<=today) ? 'done' : (!fc ? (fc=true,'current') : 'pending');
-    var num = ('0'+(i+1)).slice(-2);
-    var ds = hd ? new Date(m.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}).toUpperCase() : (st==='current'?'IN PROGRESS':'SCHEDULED');
-    var dh = st==='done' ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#1F4D3A;color:#fff;font-size:9px;font-weight:900;margin-right:6px">✓</span>'+ds : st==='current' ? '<span style="width:6px;height:6px;border-radius:50%;background:#B8860B;display:inline-block;margin-right:6px;animation:tlAmberPulse 1.8s ease-in-out infinite"></span>'+ds : ds;
-    var nc=st==='done'?'#1F4D3A':st==='current'?'#B8860B':'#C4BDB0';
-    var dc=st==='done'?'#1F4D3A':st==='current'?'#B8860B':'#B0A99F';
-    var tc=st==='pending'?'#9E9890':'#111';
-    var bg=st==='current'?'background:#fff;border-top:3px solid #B8860B;':'background:#EDEBE4;';
-    var desc=m.description||m.desc||'';
-    return '<div style="display:grid;grid-template-columns:56px 1fr;border-bottom:1px solid #D8D2C8;'+bg+'"><div style="padding:28px 0 28px 24px;font-weight:800;font-size:13px;letter-spacing:0.04em;border-right:1px solid #D8D2C8;color:'+nc+'">'+num+'</div><div style="padding:28px 40px 28px 28px"><div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;color:'+dc+';display:flex;align-items:center">'+dh+'</div><div style="font-family:Georgia,serif;font-weight:600;font-size:20px;color:'+tc+'">'+m.label+'</div>'+(desc?'<div style="font-size:14px;line-height:1.72;margin-top:8px;color:'+(st==='pending'?'#B0A99F':'#3A3832')+';'+(st==='pending'?'font-style:italic':'')+'">'+(desc)+'</div>':'')+'</div></div>';
-  }).join('');
-}
 </script>
 </body>
 </html>
