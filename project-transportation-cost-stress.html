@@ -546,8 +546,7 @@ const db = getFirestore(app);
 
 async function loadProject(){
   const id = new URLSearchParams(window.location.search).get('id');
-  if(!id) return; // no id = show default Transportation Cost Stress hardcoded content
-
+  if(!id) return;
   try {
     const snap = await getDoc(doc(db,'projects',id));
     if(!snap.exists()) return;
@@ -555,20 +554,22 @@ async function loadProject(){
 
     // Title
     document.querySelectorAll('h1').forEach(el => {
-      if(el.textContent.includes('Transportation Cost Stress')) el.textContent = p.title||'';
+      if(el.textContent.includes('Transportation Cost Stress') || el.textContent.includes('Ogun SME')) el.textContent = p.title||'';
     });
-    document.title = `${p.title||'Project'} — Analyst Den`;
+    document.title = (p.title||'Project') + ' — Analyst Den';
+    storeTimelineData(p);
     storeTimelineData(p);
 
-    // Hero eyebrow
-    const eyebrow = document.querySelector('.pd-hero-eyebrow');
-    if(eyebrow) eyebrow.textContent = 'Analyst Den Research Project';
-
-    // Meta chips
+    // Hero chips
     const chips = document.querySelectorAll('.pd-chip');
     if(chips[0]) chips[0].textContent = p.location||'';
     if(chips[1]) chips[1].textContent = p.period||'';
     if(chips[2]) chips[2].textContent = 'Field Research';
+
+    // Status badge
+    const badge = document.getElementById('status-badge');
+    const badgeText = document.getElementById('status-badge-text');
+    if(badgeText) badgeText.textContent = p.status ? p.status.charAt(0).toUpperCase()+p.status.slice(1) : 'Active';
 
     // Image
     if(p.image){
@@ -576,268 +577,104 @@ async function loadProject(){
       if(imgEl) imgEl.src = p.image;
     }
 
-    // Stats
-    // Smart stats
-    const status=(p.status||'planned').toLowerCase();
-    const isPlanned=status==='planned', isCompleted=status==='completed', isActive=status==='active'||status==='ongoing';
+    // Description + writeup
+    const descEls = document.querySelectorAll('.t-body');
+    if(descEls[0] && p.description) descEls[0].innerHTML = p.description;
+    if(descEls[1] && p.writeup) descEls[1].innerHTML = p.writeup;
 
-    // Update live badge
-    const badge     = document.getElementById('status-badge');
-    const badgeText = document.getElementById('status-badge-text');
-    const liveDot   = document.querySelector('.live-dot');
-    if(badge && badgeText){
-      badgeText.textContent = p.status ? p.status.charAt(0).toUpperCase()+p.status.slice(1) : 'Active';
-      if(isCompleted){
-        // Completed — no pulse, muted style
-        badge.style.background = 'rgba(107,101,96,0.1)';
-        badge.style.borderColor = 'rgba(107,101,96,0.3)';
-        badge.style.color = 'var(--text-lt,#6B6560)';
-        if(liveDot) liveDot.style.background = '#6B6560';
-        if(liveDot) liveDot.style.setProperty('--pulse-color','rgba(107,101,96,0.3)');
-      } else if(isPlanned){
-        // Planned — gold but slower pulse
-        badge.style.animationDuration = '5s';
-      }
-      // Active/Ongoing keeps default gold fast pulse
+    // Pull quote
+    const quoteEl = document.querySelector('.pull-quote');
+    if(quoteEl && p.quote){
+      const tmp = document.createElement('div'); tmp.innerHTML = p.quote;
+      quoteEl.textContent = '"'+(tmp.textContent||p.quote)+'"';
     }
-    const s1=document.getElementById('stat-1'),s1l=document.getElementById('stat-1-label');
-    const s2=document.getElementById('stat-2'),s2l=document.getElementById('stat-2-label');
-    const s3=document.getElementById('stat-3'),s3l=document.getElementById('stat-3-label');
-    const s4=document.getElementById('stat-4'),s4l=document.getElementById('stat-4-label');
-    if(isPlanned){
-      if(s1)s1.textContent=p.responses?p.responses.toLocaleString():'TBD'; if(s1l)s1l.textContent='Target Responses';
-      if(s2)s2.textContent=p.location?p.location.split(',')[0]:'TBD';      if(s2l)s2l.textContent='Target Location';
-      if(s3)s3.textContent=p.period||'Upcoming';                            if(s3l)s3l.textContent='Planned Period';
-      if(s4)s4.textContent='—';                                             if(s4l)s4l.textContent='Contributors (TBC)';
-    } else {
-      if(s1)s1.textContent=p.responses?p.responses.toLocaleString():(isActive?'In Progress':'—'); if(s1l)s1l.textContent='Survey Responses';
-      if(s2)s2.textContent=p.location?p.location.split(',')[0]:'—';                               if(s2l)s2l.textContent='Coverage Area';
-      if(s3)s3.textContent=p.period||'—';                                                         if(s3l)s3l.textContent='Study Period';
-      if(s4)s4.textContent=isCompleted?'Completed':'Ongoing';                                     if(s4l)s4l.textContent='Status';
-    }
+
+    // Status
+    const status = (p.status||'planned').toLowerCase();
+    const isPlanned = status==='planned';
+    const isCompleted = status==='completed';
 
     // Key findings — completed only
-    const findSec=document.getElementById('findings-section');
-    const findGrid=document.getElementById('findings-grid');
-    if(isCompleted&&p.findings&&p.findings.length&&findSec&&findGrid){
-      findSec.style.display='block';
-      findGrid.innerHTML=p.findings.map(f=>`<div class="finding-col"><div class="finding-num">${f.metric||'—'}</div><div class="finding-label">${f.label||''}</div></div>`).join('');
+    const findSec = document.getElementById('findings-section');
+    const findGrid = document.getElementById('findings-grid');
+    if(isCompleted && p.findings && p.findings.length && findSec && findGrid){
+      findSec.style.display = 'block';
+      findGrid.innerHTML = p.findings.map(f=>`<div class="finding-col"><div class="finding-num">${f.metric||'—'}</div><div class="finding-label">${f.label||''}</div></div>`).join('');
     }
 
-    // Research team — only if contributors assigned
-    const teamSec=document.getElementById('team-section');
-    const strip=document.getElementById('contributors-strip');
-    if(p.title&&teamSec&&strip){
-      const cSnap=await getDocs(collection(db,'contributors'));
-      const assigned=cSnap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>Array.isArray(c.projects)&&c.projects.some(pr=>(p.title||'').toLowerCase().includes((pr||'').toLowerCase().substring(0,8))||(pr||'').toLowerCase().includes((p.title||'').toLowerCase().substring(0,8))));
-      if(assigned.length){
-        teamSec.style.display='block';
-        // team render handled below
-      }
+    // Power BI button
+    const pbiBtnWrap = document.getElementById('pbi-btn-wrap');
+    if(pbiBtnWrap){
+      pbiBtnWrap.innerHTML = p.powerbi
+        ? `<button onclick="openPBI('${p.powerbi}','${(p.title||'').replace(/'/g,"\'")} — Dashboard')" class="btn btn--primary" style="display:inline-flex;align-items:center;gap:8px">📊 View Interactive Dashboard</button>`
+        : '';
     }
 
     // Downloads
-    const dlGrid=document.getElementById('downloads-grid');
+    const dlGrid = document.getElementById('downloads-grid');
     if(dlGrid){
-      const files=[
+      const files = [
         {tag:'PDF Report',   title:'Full Research Report', url:p.pdf,          ext:'PDF'},
         {tag:'Dataset',      title:'Raw Survey Dataset',   url:p.dataset,       ext:'CSV/Excel'},
         {tag:'Methodology',  title:'Research Methodology', url:p.methodology,   ext:'PDF'},
         {tag:'Presentation', title:'Findings Deck',        url:p.presentation,  ext:'PPTX'},
       ];
-      dlGrid.innerHTML=files.map(f=>`<div class="pub-card" style="${!f.url?'opacity:0.5':''}"><span class="pub-tag">${f.tag}</span><p class="pub-title">${f.title}</p><p class="pub-meta">${f.url?f.ext:'Not yet available'}</p>${f.url?`<a href="${f.url}" class="pub-download" target="_blank" download>↓ Download</a>`:`<span class="pub-download" style="color:var(--text-lt);cursor:default">Not Available</span>`}</div>`).join('');
+      dlGrid.innerHTML = files.map(f=>`
+        <div class="pub-card" style="${!f.url?'opacity:0.5':''}">
+          <span class="pub-tag">${f.tag}</span>
+          <p class="pub-title">${f.title}</p>
+          <p class="pub-meta">${f.url?f.ext:'Not yet available'}</p>
+          ${f.url?`<a href="${f.url}" class="pub-download" target="_blank" download>↓ Download</a>`:`<span class="pub-download" style="color:var(--text-lt);cursor:default">Not Available</span>`}
+        </div>`).join('');
     }
 
-    // Description
-    const descEls = document.querySelectorAll('.t-body');
-    if(descEls[0] && p.description) descEls[0].innerHTML = p.description;
-    if(descEls[1] && p.writeup)     descEls[1].innerHTML = p.writeup;
-
-    // Pull quote
-    const quoteEl = document.querySelector('.pull-quote');
-    if(quoteEl && p.quote) quoteEl.textContent = `"${p.quote}"`;
-
-    // Downloads
-    const dlLinks = {
-      pdf:          document.querySelector('a[download].pub-card'),
-      dataset:      null,
-      methodology:  null,
-      presentation: null
-    };
-
-    // Power BI button
-    const pbiBtnWrap = document.getElementById('pbi-btn-wrap');
-    if(pbiBtnWrap){
-      if(p.powerbi){
-        pbiBtnWrap.innerHTML = `
-          <button onclick="openPBI('${p.powerbi}','${(p.title||'').replace(/'/g,"\'")} — Dashboard')"
-            class="btn btn--primary" style="display:inline-flex;align-items:center;gap:8px">
-            📊 View Interactive Dashboard
-          </button>`;
-      } else {
-        pbiBtnWrap.innerHTML = '';
-      }
-    }
-
-    // Update download cards
-    const pubCards = document.querySelectorAll('.pub-card');
-    if(pubCards[0] && p.pdf){
-      pubCards[0].href = p.pdf;
-      pubCards[0].style.opacity = '1';
-    }
-    if(pubCards[1] && p.dataset){
-      pubCards[1].href = p.dataset;
-      pubCards[1].style.opacity = '1';
-      pubCards[1].setAttribute('href', p.dataset);
-      const dl = pubCards[1].querySelector('.pub-download');
-      if(dl) dl.textContent = '↓ Download';
-    }
-    if(pubCards[2] && p.methodology){
-      pubCards[2].href = p.methodology;
-      pubCards[2].style.opacity = '1';
-      const dl = pubCards[2].querySelector('.pub-download');
-      if(dl) dl.textContent = '↓ Download';
-    }
-    if(pubCards[3] && p.presentation){
-      pubCards[3].href = p.presentation;
-      pubCards[3].style.opacity = '1';
-      const dl = pubCards[3].querySelector('.pub-download');
-      if(dl) dl.textContent = '↓ Download';
-    }
-
-    // Load contributors assigned to this project
-    if(p.title){
-      const contribSnap = await getDocs(collection(db,'contributors'));
-      const assigned = contribSnap.docs.map(d=>({id:d.id,...d.data()}))
-        .filter(c => Array.isArray(c.projects) && c.projects.some(proj =>
-          proj.toLowerCase().includes(p.title.toLowerCase().substring(0,10))
-        ));
+    // Research team — load contributors assigned to this project
+    const teamSec = document.getElementById('team-section');
+    const strip = document.getElementById('contributors-strip');
+    if(teamSec && strip && p.title){
+      const cSnap = await getDocs(collection(db,'contributors'));
+      const assigned = cSnap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>{
+        if(!Array.isArray(c.projects)) return false;
+        const title = (p.title||'').toLowerCase();
+        return c.projects.some(pr=>{
+          const pr2 = (pr||'').toLowerCase();
+          return title.includes(pr2.substring(0,8)) || pr2.includes(title.substring(0,8));
+        });
+      });
 
       if(assigned.length){
-        var strip = document.getElementById('contributors-strip');
-        var teamSec2 = document.getElementById('team-section');
-        if(strip && teamSec2){
-          teamSec2.style.display = 'block';
-          var SHOW = 4;
-          var showAll = false;
-          function buildTeamGrid(){
-            strip.innerHTML = '';
-            var visible = showAll ? assigned : assigned.slice(0, SHOW);
-            var grid = document.createElement('div');
-            grid.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border,#D8D2C8);border:1px solid var(--border,#D8D2C8)';
-            grid.innerHTML = visible.map(function(c,i){
-              var initials = (c.name||'?').split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2).toUpperCase();
-              var av = c.avatar
-                ? '<img src="'+c.avatar+'" alt="'+(c.name||'')+'" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--border,#D8D2C8);display:block;margin:0 auto 14px;transition:border-color 0.25s" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div style="display:none;width:72px;height:72px;border-radius:50%;background:var(--bg-alt,#EDEBE4);border:2px solid var(--border,#D8D2C8);align-items:center;justify-content:center;font-family:var(--font-data);font-weight:800;font-size:20px;color:var(--ink-lt,#6B6560);margin:0 auto 14px">'+initials+'</div>'
-                : '<div style="display:flex;width:72px;height:72px;border-radius:50%;background:var(--bg-alt,#EDEBE4);border:2px solid var(--border,#D8D2C8);align-items:center;justify-content:center;font-family:var(--font-data);font-weight:800;font-size:20px;color:var(--ink-lt,#6B6560);margin:0 auto 14px">'+initials+'</div>';
-              return '<div style="background:var(--bg,#F6F3ED);padding:28px 12px 20px;text-align:center;cursor:default;transition:background 0.2s,transform 0.2s;position:relative;overflow:hidden;animation:teamCardIn 0.4s ease '+(i*60)+'ms both" onmouseover="this.style.background='#fff';this.style.transform='translateY(-2px)';this.querySelector('img')?this.querySelector('img').style.borderColor='#B8860B':(null)" onmouseout="this.style.background='var(--bg,#F6F3ED)';this.style.transform='translateY(0)'">'+av+'<div style="font-family:var(--font-display,Georgia,serif);font-weight:600;font-size:15px;color:var(--ink,#111);margin-bottom:5px">'+(c.name||'—')+'</div><div style="font-family:var(--font-data);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-lt,#6B6560)">'+(c.role||'')+'</div></div>';
-            }).join('');
-            strip.appendChild(grid);
-            // See more / less button
-            if(assigned.length > SHOW){
-              var btn2 = document.createElement('div');
-              btn2.style.cssText = 'text-align:center;padding:16px';
-              btn2.innerHTML = '<button onclick="window._teamToggle()" style="background:none;border:1.5px solid var(--border,#D8D2C8);padding:9px 28px;font-family:var(--font-data);font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:var(--ink-lt,#6B6560);cursor:pointer;transition:all 0.2s">'+(showAll ? '↑ Show Less' : 'See All '+assigned.length+' Contributors ↓')+'</button>';
-              strip.appendChild(btn2);
-            }
+        teamSec.style.display = 'block';
+        var SHOW = 4;
+        var showAll = false;
+        function buildTeamGrid(){
+          strip.innerHTML = '';
+          var visible = showAll ? assigned : assigned.slice(0, SHOW);
+          var grid = document.createElement('div');
+          grid.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#D8D2C8;border:1px solid #D8D2C8';
+          grid.innerHTML = visible.map(function(c,i){
+            var initials = (c.name||'?').split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2).toUpperCase();
+            var av = c.avatar
+              ? '<img src="'+c.avatar+'" alt="'+(c.name||'')+'" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid #D8D2C8;display:block;margin:0 auto 14px" onerror="this.style.display='none';this.nextSibling.style.display='flex'"/><div style="display:none;width:72px;height:72px;border-radius:50%;background:#EDEBE4;border:2px solid #D8D2C8;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#6B6560;margin:0 auto 14px">'+initials+'</div>'
+              : '<div style="display:flex;width:72px;height:72px;border-radius:50%;background:#EDEBE4;border:2px solid #D8D2C8;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#6B6560;margin:0 auto 14px">'+initials+'</div>';
+            return '<div style="background:#F6F3ED;padding:28px 12px 20px;text-align:center;transition:background 0.2s">'+av+'<div style="font-family:Georgia,serif;font-weight:600;font-size:15px;color:#111;margin-bottom:5px">'+(c.name||'—')+'</div><div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#6B6560">'+(c.role||'')+'</div></div>';
+          }).join('');
+          strip.appendChild(grid);
+          if(assigned.length > SHOW){
+            var btnWrap = document.createElement('div');
+            btnWrap.style.cssText = 'text-align:center;padding:20px';
+            btnWrap.innerHTML = '<button onclick="window._teamToggle()" style="background:none;border:1.5px solid #D8D2C8;padding:9px 28px;font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:#6B6560;cursor:pointer">'+(showAll?'↑ Show Less':'See All '+assigned.length+' Contributors ↓')+'</button>';
+            strip.appendChild(btnWrap);
           }
-          window._teamToggle = function(){ showAll = !showAll; buildTeamGrid(); };
-          buildTeamGrid();
         }
+        window._teamToggle = function(){ showAll=!showAll; buildTeamGrid(); };
+        buildTeamGrid();
+      } else {
+        teamSec.style.display = 'none';
       }
     }
 
   } catch(e){ console.error('Project detail load error:', e); }
 }
-
-
-/* ══ PROJECT TIMELINE ══ */
-let _timelineData = null;
-
-window.openTimeline = function(){
-  const sec = document.getElementById('timeline-section');
-  if(!sec) return;
-  if(_timelineData) renderTimeline(_timelineData);
-  sec.style.display = 'block';
-  // Scroll to the section smoothly
-  setTimeout(function(){
-    var top = sec.getBoundingClientRect().top + window.pageYOffset - 80;
-    window.scrollTo({ top: top, behavior: 'smooth' });
-  }, 60);
-  var btn = document.getElementById('timeline-btn');
-  if(btn){ btn.textContent = 'Hide Timeline ↑'; btn.onclick = function(){ closeTimeline(); }; }
-};
-
-window.closeTimeline = function(){
-  var sec = document.getElementById('timeline-section');
-  if(sec) sec.style.display = 'none';
-  var btn = document.getElementById('timeline-btn');
-  if(btn){ btn.textContent = 'Project Timeline →'; btn.onclick = function(){ openTimeline(); }; }
-};
-
-// Close on Escape
-
-
-function renderTimeline(p){
-  const track  = document.getElementById('timeline-track');
-  const nameEl = document.getElementById('tl-project-name');
-  if(nameEl) nameEl.textContent = p.title || 'Project Timeline';
-
-  const defaultMilestones = [
-    { label:'Project Approved',         desc:'Project formally approved and added to the Analyst Den research pipeline.' },
-    { label:'Field Research Begins',    desc:'Field researchers deployed to target locations to begin data collection.' },
-    { label:'Data Collection Complete', desc:'All survey responses collected and raw data secured for cleaning.' },
-    { label:'Analysis Phase',           desc:'Data cleaned, validated and analysed using Power BI and Python.' },
-    { label:'Report Published',         desc:'Findings published as a public insights report with downloadable PDF.' },
-  ];
-
-  const milestones = (p.timeline && p.timeline.length)
-    ? p.timeline
-    : defaultMilestones.map(m => ({ label:m.label, description:m.desc, date:'' }));
-
-  const today = new Date(); today.setHours(0,0,0,0);
-  let foundCurrent = false;
-
-  const items = milestones.map((m, i) => {
-    const hasDate     = m.date && m.date.trim();
-    const mDate       = hasDate ? new Date(m.date) : null;
-    const isPast      = mDate && mDate <= today;
-    let state = 'pending';
-    if(isPast){ state = 'done'; }
-    else if(!foundCurrent){ state = 'current'; foundCurrent = true; }
-
-    const num = String(i+1).padStart(2,'0');
-
-    const dateStr = hasDate
-      ? new Date(m.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}).toUpperCase()
-      : (state==='current' ? 'IN PROGRESS' : 'SCHEDULED');
-
-    const dateContent = state==='done'
-      ? `<span class="tl-check">✓</span> ${dateStr}`
-      : state==='current'
-        ? `<span class="tl-live-dot"></span> ${dateStr}`
-        : dateStr;
-
-    const desc = m.description || m.desc || '';
-
-    return `
-    <div class="tl-item ${state}">
-      <div class="tl-num">${num}</div>
-      <div class="tl-content">
-        <div class="tl-date">${dateContent}</div>
-        <div class="tl-title">${m.label||m.title||'—'}</div>
-        ${desc ? `<div class="tl-desc">${desc}</div>` : ''}
-      </div>
-    </div>`;
-  });
-
-  track.innerHTML = items.join('') || '<div class="tl-empty">No timeline data yet</div>';
-  // Remove the track::before line styling (not needed in this design)
-  track.style.setProperty('--fill', '0%');
-}
-
-
-function storeTimelineData(p){ _timelineData = p; }
 
 loadProject();
 
@@ -866,6 +703,58 @@ document.getElementById('pbi-modal')?.addEventListener('click', function(e){
 });
 // Close on Escape key
 document.addEventListener('keydown', e => { if(e.key==='Escape') closePBI(); });
+
+/* ══ TIMELINE JS ══ */
+var _timelineData = null;
+function storeTimelineData(p){ _timelineData = p; }
+
+window.openTimeline = function(){
+  var sec = document.getElementById('timeline-section');
+  if(!sec) return;
+  if(_timelineData) renderTimeline(_timelineData);
+  sec.style.display = 'block';
+  setTimeout(function(){
+    var top = sec.getBoundingClientRect().top + window.pageYOffset - 80;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+  }, 60);
+  var btn = document.getElementById('timeline-btn');
+  if(btn){ btn.textContent = 'Hide Timeline ↑'; btn.onclick = function(){ window.closeTimeline(); }; }
+};
+
+window.closeTimeline = function(){
+  var sec = document.getElementById('timeline-section');
+  if(sec) sec.style.display = 'none';
+  var btn = document.getElementById('timeline-btn');
+  if(btn){ btn.textContent = 'Project Timeline →'; btn.onclick = function(){ window.openTimeline(); }; }
+};
+
+function renderTimeline(p){
+  var track = document.getElementById('timeline-track');
+  if(!track) return;
+  var defaults = [
+    {label:'Project Approved', description:'Project formally approved and added to the Analyst Den research pipeline.'},
+    {label:'Field Research Begins', description:'Field researchers deployed to target locations to begin data collection.'},
+    {label:'Data Collection Complete', description:'All survey responses collected and raw data secured for cleaning.'},
+    {label:'Analysis Phase', description:'Data cleaned, validated and analysed using Power BI and Python.'},
+    {label:'Report Published', description:'Findings published as a public insights report with downloadable PDF.'}
+  ];
+  var milestones = (p.timeline && p.timeline.length) ? p.timeline : defaults.map(function(m){ return {label:m.label,description:m.description,date:''}; });
+  var today = new Date(); today.setHours(0,0,0,0);
+  var foundCurrent = false;
+  track.innerHTML = milestones.map(function(m,i){
+    var hasDate = m.date && m.date.trim();
+    var mDate = hasDate ? new Date(m.date) : null;
+    var state = (mDate && mDate <= today) ? 'done' : (!foundCurrent ? (foundCurrent=true, 'current') : 'pending');
+    var num = ('0'+(i+1)).slice(-2);
+    var ds = hasDate ? new Date(m.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}).toUpperCase() : (state==='current'?'IN PROGRESS':'SCHEDULED');
+    var dHtml = state==='done' ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#1F4D3A;color:#fff;font-size:9px;font-weight:900;margin-right:6px">✓</span>'+ds : state==='current' ? '<span style="width:6px;height:6px;border-radius:50%;background:#B8860B;display:inline-block;margin-right:6px;animation:tlAmberPulse 1.8s ease-in-out infinite"></span>'+ds : ds;
+    var nc = state==='done'?'#1F4D3A':state==='current'?'#B8860B':'#C4BDB0';
+    var dc = state==='done'?'#1F4D3A':state==='current'?'#B8860B':'#B0A99F';
+    var tc = state==='pending'?'#9E9890':'#111';
+    var bg = state==='current'?'background:#fff;border-top:3px solid #B8860B;':'background:#EDEBE4;';
+    return '<div style="display:grid;grid-template-columns:56px 1fr;border-bottom:1px solid #D8D2C8;'+bg+'animation:tlIn 0.4s ease '+(i*80)+'ms both"><div style="padding:28px 0 28px 24px;font-weight:800;font-size:13px;border-right:1px solid #D8D2C8;color:'+nc+'">'+num+'</div><div style="padding:28px 40px 28px 28px"><div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;color:'+dc+';display:flex;align-items:center">'+dHtml+'</div><div style="font-family:Georgia,serif;font-weight:600;font-size:20px;color:'+tc+'">'+m.label+'</div>'+(m.description?'<div style="font-size:14px;line-height:1.72;margin-top:8px;color:'+(state==='pending'?'#B0A99F':'#3A3832')+';'+(state==='pending'?'font-style:italic':'')+'">'+(m.description||'')+'</div>':'')+'</div></div>';
+  }).join('');
+}
 
 </script>
 
