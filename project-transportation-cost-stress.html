@@ -169,101 +169,44 @@
 }
 
 
-/* ══ PROJECT TIMELINE DRAWER ══ */
-.timeline-overlay {
-  position:fixed;inset:0;background:rgba(0,0,0,0);
-  z-index:800;pointer-events:none;
-  transition:background 0.4s ease;
+/* ══ PROJECT TIMELINE — Inline Section ══ */
+#timeline-section {
+  display:none;
+  background:var(--bg-alt,#EDEBE4);
+  border-top:1px solid var(--border,#D8D2C8);
+  border-bottom:1px solid var(--border,#D8D2C8);
 }
-.timeline-overlay.open {
-  background:rgba(0,0,0,0.55);pointer-events:all;
-}
-.timeline-drawer {
-  position:fixed;top:0;left:0;
-  width:min(540px,96vw);
-  height:100%;
-  height:100dvh;
-  background:#F6F3ED;
-  z-index:801;
-  transform:translateX(-100%);
-  transition:transform 0.45s cubic-bezier(0.4,0,0.2,1);
-  display:flex;flex-direction:column;
-  overflow:hidden;
-  box-shadow:8px 0 40px rgba(0,0,0,0.18);
-}
-.timeline-drawer.open { transform:translateX(0); }
+#timeline-section.visible { display:block; }
 
-.timeline-drawer-head {
-  padding:28px 32px 24px;
-  border-bottom:3px solid #B8860B;
-  display:flex;align-items:flex-start;justify-content:space-between;
-  flex-shrink:0;background:#111;
-}
-.timeline-drawer-head h2 {
-  font-family:var(--font-display,'Cormorant Garamond',Georgia,serif);
-  font-weight:600;font-size:24px;color:#fff;
-  line-height:1.15;margin-bottom:5px;
-}
-.timeline-drawer-head p {
-  font-family:var(--font-data,'Barlow Condensed',sans-serif);
-  font-size:11px;letter-spacing:0.12em;text-transform:uppercase;
-  color:rgba(255,255,255,0.4);
-}
-.timeline-close {
-  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
-  color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:background 0.2s;flex-shrink:0;margin-left:16px;
-}
-.timeline-close:hover { background:rgba(255,255,255,0.2); }
-
-.timeline-body {
-  flex:1;
-  overflow-y:auto;
-  overflow-x:hidden;
-  padding:0;
-  overscroll-behavior:contain;
-  -webkit-overflow-scrolling:touch;
-}
-
-/* ── MILESTONE CARDS — no line, pure editorial ── */
 .tl-item {
   display:grid;
-  grid-template-columns:48px 1fr;
+  grid-template-columns:56px 1fr;
   gap:0;
-  border-bottom:1px solid #D8D2C8;
-  position:relative;
+  border-bottom:1px solid var(--border,#D8D2C8);
+  background:var(--bg-alt,#EDEBE4);
+  transition:background 0.2s;
 }
 .tl-item:last-child { border-bottom:none; }
+.tl-item.done    { background:var(--bg-alt,#EDEBE4); }
+.tl-item.current { background:#fff; position:relative; }
+.tl-item.current::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#B8860B;
+}
+.tl-item.pending { background:var(--bg-alt,#EDEBE4); }
 
-/* Left column — number */
 .tl-num {
-  padding:28px 0 28px 20px;
+  padding:28px 0 28px 24px;
   font-family:var(--font-data,'Barlow Condensed',sans-serif);
-  font-weight:800;font-size:13px;letter-spacing:0.04em;
-  line-height:1;
+  font-weight:800;font-size:13px;letter-spacing:0.04em;line-height:1;
+  border-right:1px solid var(--border,#D8D2C8);
 }
 .tl-item.done    .tl-num { color:#1F4D3A; }
 .tl-item.current .tl-num { color:#B8860B; }
 .tl-item.pending .tl-num { color:#C4BDB0; }
 
-/* Right column — content */
 .tl-content {
-  padding:28px 28px 28px 16px;
-  border-left:1px solid #D8D2C8;
+  padding:28px 40px 28px 28px;
 }
-
-/* Top accent bar on current */
-.tl-item.current {
-  background:#fff;
-}
-.tl-item.current::before {
-  content:'';
-  position:absolute;top:0;left:0;right:0;
-  height:3px;
-  background:#B8860B;
-}
-
 .tl-date {
   font-family:var(--font-data,'Barlow Condensed',sans-serif);
   font-size:11px;font-weight:700;letter-spacing:0.12em;
@@ -273,148 +216,45 @@
 .tl-item.done    .tl-date { color:#1F4D3A; }
 .tl-item.current .tl-date { color:#B8860B; }
 .tl-item.pending .tl-date { color:#B0A99F; }
-
-/* Pulsing indicator for current */
 .tl-live-dot {
-  width:6px;height:6px;border-radius:50%;
-  background:#B8860B;display:inline-block;flex-shrink:0;
+  width:6px;height:6px;border-radius:50%;background:#B8860B;
+  display:inline-block;flex-shrink:0;
   animation:tlAmberPulse 1.8s ease-in-out infinite;
 }
-@keyframes tlAmberPulse {
-  0%,100%{ transform:scale(1);opacity:1; }
-  50%    { transform:scale(1.6);opacity:0.6; }
+@keyframes tlAmberPulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.6);opacity:0.6;}}
+.tl-check {
+  display:inline-flex;align-items:center;justify-content:center;
+  width:16px;height:16px;border-radius:50%;
+  background:#1F4D3A;color:#fff;font-size:9px;font-weight:900;flex-shrink:0;
 }
-
 .tl-title {
   font-family:var(--font-display,'Cormorant Garamond',Georgia,serif);
-  font-weight:600;font-size:20px;line-height:1.15;
-  margin-bottom:0;
+  font-weight:600;font-size:20px;line-height:1.15;margin-bottom:0;
 }
 .tl-item.done    .tl-title { color:#111; }
 .tl-item.current .tl-title { color:#111; }
 .tl-item.pending .tl-title { color:#9E9890; }
-
 .tl-desc {
   font-family:var(--font-body,'Lora',Georgia,serif);
-  font-size:14px;line-height:1.72;
-  margin-top:8px;
+  font-size:14px;line-height:1.72;margin-top:8px;
 }
 .tl-item.done    .tl-desc { color:#3A3832; }
 .tl-item.current .tl-desc { color:#3A3832; }
 .tl-item.pending .tl-desc { color:#B0A99F;font-style:italic; }
 
-/* Checkmark for done items */
-.tl-check {
-  display:inline-flex;align-items:center;justify-content:center;
-  width:16px;height:16px;border-radius:50%;
-  background:#1F4D3A;color:#fff;
-  font-size:9px;font-weight:900;flex-shrink:0;
+/* Entrance animation */
+.tl-item {
+  opacity:0;transform:translateY(10px);
+  animation:tlIn 0.4s ease forwards;
 }
+@keyframes tlIn{to{opacity:1;transform:translateY(0);}}
 
-.tl-empty {
-  padding:64px 32px;
-  text-align:center;
-  font-family:var(--font-data,'Barlow Condensed',sans-serif);
-  font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#9E9890;
-}
-
-@media(max-width:480px){
-  .tl-num { padding:20px 0 20px 14px; font-size:12px; }
-  .tl-content { padding:20px 16px 20px 12px; }
-  .tl-title { font-size:17px; }
-}
-
-
-/* ══ RESEARCH TEAM — Stunning Grid ══ */
-.team-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));
-  gap:1px;
-  background:var(--border,#D8D2C8);
-  border:1px solid var(--border,#D8D2C8);
-}
-.team-card {
-  background:var(--bg,#F6F3ED);
-  padding:28px 16px 22px;
-  text-align:center;
-  cursor:default;
-  transition:background 0.25s ease, transform 0.25s ease;
-  position:relative;
-  overflow:hidden;
-}
-.team-card::before {
-  content:'';
-  position:absolute;top:0;left:0;right:0;
-  height:3px;
-  background:var(--gold,#B8860B);
-  transform:scaleX(0);
-  transform-origin:left;
-  transition:transform 0.3s ease;
-}
-.team-card:hover { background:#fff; transform:translateY(-2px); }
-.team-card:hover::before { transform:scaleX(1); }
-
-.team-avatar-wrap {
-  position:relative;
-  width:72px;height:72px;
-  margin:0 auto 14px;
-}
-.team-avatar-wrap img {
-  width:72px;height:72px;
-  border-radius:50%;
-  object-fit:cover;
-  border:2px solid var(--border,#D8D2C8);
-  transition:border-color 0.25s;
-  display:block;
-}
-.team-card:hover .team-avatar-wrap img {
-  border-color:var(--gold,#B8860B);
-}
-.team-avatar-initials {
-  width:72px;height:72px;border-radius:50%;
-  background:var(--bg-alt,#EDEBE4);
-  border:2px solid var(--border,#D8D2C8);
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--font-data,'Barlow Condensed',sans-serif);
-  font-weight:800;font-size:20px;letter-spacing:0.02em;
-  color:var(--ink-lt,#6B6560);
-  transition:border-color 0.25s, color 0.25s;
-}
-.team-card:hover .team-avatar-initials {
-  border-color:var(--gold,#B8860B);
-  color:var(--gold,#B8860B);
-}
-.team-name {
-  font-family:var(--font-display,'Cormorant Garamond',Georgia,serif);
-  font-weight:600;font-size:15px;line-height:1.2;
-  color:var(--ink,#111);margin-bottom:5px;
-}
-.team-role {
-  font-family:var(--font-data,'Barlow Condensed',sans-serif);
-  font-size:10px;font-weight:700;letter-spacing:0.12em;
-  text-transform:uppercase;color:var(--ink-lt,#6B6560);
-}
-.team-card:hover .team-role { color:var(--gold,#B8860B); }
-
-/* Stagger animation on load */
-.team-card {
-  opacity:0;
-  transform:translateY(16px);
-  animation:teamCardIn 0.5s ease forwards;
-}
-@keyframes teamCardIn {
-  to { opacity:1; transform:translateY(0); }
-}
-
-/* Mobile: 2 columns */
 @media(max-width:600px){
-  .team-grid { grid-template-columns:repeat(2,1fr); }
-  .team-card { padding:20px 12px 16px; }
-  .team-avatar-wrap, .team-avatar-wrap img, .team-avatar-initials { width:56px;height:56px; }
-  .team-avatar-initials { font-size:16px; }
-  .team-name { font-size:13px; }
+  .tl-num{padding:20px 0 20px 16px;font-size:12px;}
+  .tl-content{padding:20px 16px 20px 16px;}
+  .tl-title{font-size:17px;}
+  .tl-grid{grid-template-columns:44px 1fr;}
 }
-
 </style>
 
 <style>
@@ -890,33 +730,28 @@ strip.appendChild(gridEl);
 let _timelineData = null;
 
 window.openTimeline = function(){
-  // Save scroll position before locking
-  window._scrollY = window.scrollY;
-  document.body.style.position = 'fixed';
-  document.body.style.top = '-' + window._scrollY + 'px';
-  document.body.style.left = '0';
-  document.body.style.right = '0';
-  document.body.style.overflow = 'hidden';
-  document.getElementById('timeline-overlay').classList.add('open');
-  document.getElementById('timeline-drawer').classList.add('open');
+  const sec = document.getElementById('timeline-section');
+  if(!sec) return;
   if(_timelineData) renderTimeline(_timelineData);
+  sec.classList.add('visible');
+  // Smooth scroll to top of timeline section
+  setTimeout(()=>{
+    sec.scrollIntoView({ behavior:'smooth', block:'start' });
+  }, 50);
+  // Change button text
+  const btn = document.getElementById('timeline-btn');
+  if(btn){ btn.textContent = 'Hide Timeline ↑'; btn.onclick = closeTimeline; }
 };
 
 window.closeTimeline = function(){
-  document.getElementById('timeline-overlay').classList.remove('open');
-  document.getElementById('timeline-drawer').classList.remove('open');
-  // Restore body and scroll position
-  const scrollY = window._scrollY || 0;
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.left = '';
-  document.body.style.right = '';
-  document.body.style.overflow = '';
-  window.scrollTo(0, scrollY);
+  const sec = document.getElementById('timeline-section');
+  if(sec) sec.classList.remove('visible');
+  const btn = document.getElementById('timeline-btn');
+  if(btn){ btn.textContent = 'Project Timeline →'; btn.onclick = openTimeline; }
 };
 
 // Close on Escape
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeTimeline(); });
+
 
 function renderTimeline(p){
   const track  = document.getElementById('timeline-track');
@@ -1009,22 +844,7 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') closePBI(); });
 
 </script>
 
-<!-- ══ PROJECT TIMELINE DRAWER ══ -->
-<div class="timeline-overlay" id="timeline-overlay" onclick="closeTimeline()"></div>
-<div class="timeline-drawer" id="timeline-drawer">
-  <div class="timeline-drawer-head">
-    <div>
-      <h2 id="tl-project-name">Project Timeline</h2>
-      <p>Research milestones & progress</p>
-    </div>
-    <button class="timeline-close" onclick="closeTimeline()">✕</button>
-  </div>
-  <div class="timeline-body">
-    <div class="timeline-track" id="timeline-track">
-      <div class="tl-empty">Loading timeline…</div>
-    </div>
-  </div>
-</div>
+
 
 </body>
 </html>
