@@ -663,6 +663,61 @@ tr:hover td{background:var(--bg)}
         </div>
       </div>
     </div>
+    <!-- ── TIMELINE MILESTONES ── -->
+    <div style="border-top:1px solid var(--border);padding:20px 24px;background:var(--bg-alt)">
+      <p style="font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:var(--text-lt);margin-bottom:4px">Project Timeline Milestones</p>
+      <p style="font-size:12px;color:var(--text-xs);margin-bottom:16px">Set dates for each stage. Past dates show as completed (green), current as amber pulse, future as pending (grey). Leave blank if not yet scheduled.</p>
+
+      <div style="display:flex;flex-direction:column;gap:12px">
+
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--forest);padding:14px 16px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--forest);margin-bottom:8px">01 — Project Approved</div>
+          <div style="display:grid;grid-template-columns:160px 1fr;gap:10px;align-items:start">
+            <input type="date" id="tl-approved-date" style="padding:8px 10px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none;width:100%"/>
+            <textarea id="tl-approved-desc" maxlength="250" placeholder="e.g. Project formally approved and added to the research pipeline…" style="padding:8px 10px;border:1.5px solid var(--border);font-family:var(--font-body);font-size:13px;color:var(--text);background:var(--bg);outline:none;resize:none;height:60px;width:100%"></textarea>
+          </div>
+          <div style="text-align:right;font-size:11px;color:var(--text-xs);margin-top:3px"><span id="tl-approved-count">0</span>/250</div>
+        </div>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--forest);padding:14px 16px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--forest);margin-bottom:8px">02 — Field Research Begins</div>
+          <div style="display:grid;grid-template-columns:160px 1fr;gap:10px;align-items:start">
+            <input type="date" id="tl-fieldstart-date" style="padding:8px 10px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none;width:100%"/>
+            <textarea id="tl-fieldstart-desc" maxlength="250" placeholder="e.g. Field researchers deployed across target LGAs to begin data collection…" style="padding:8px 10px;border:1.5px solid var(--border);font-family:var(--font-body);font-size:13px;color:var(--text);background:var(--bg);outline:none;resize:none;height:60px;width:100%"></textarea>
+          </div>
+          <div style="text-align:right;font-size:11px;color:var(--text-xs);margin-top:3px"><span id="tl-fieldstart-count">0</span>/250</div>
+        </div>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--forest);padding:14px 16px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--forest);margin-bottom:8px">03 — Data Collection Complete</div>
+          <div style="display:grid;grid-template-columns:160px 1fr;gap:10px;align-items:start">
+            <input type="date" id="tl-datacomplete-date" style="padding:8px 10px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none;width:100%"/>
+            <textarea id="tl-datacomplete-desc" maxlength="250" placeholder="e.g. All survey responses collected and raw data secured for cleaning…" style="padding:8px 10px;border:1.5px solid var(--border);font-family:var(--font-body);font-size:13px;color:var(--text);background:var(--bg);outline:none;resize:none;height:60px;width:100%"></textarea>
+          </div>
+          <div style="text-align:right;font-size:11px;color:var(--text-xs);margin-top:3px"><span id="tl-datacomplete-count">0</span>/250</div>
+        </div>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--gold);padding:14px 16px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">04 — Analysis Phase</div>
+          <div style="display:grid;grid-template-columns:160px 1fr;gap:10px;align-items:start">
+            <input type="date" id="tl-analysis-date" style="padding:8px 10px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none;width:100%"/>
+            <textarea id="tl-analysis-desc" maxlength="250" placeholder="e.g. Data cleaned and validated, now being analysed using Power BI and Python…" style="padding:8px 10px;border:1.5px solid var(--border);font-family:var(--font-body);font-size:13px;color:var(--text);background:var(--bg);outline:none;resize:none;height:60px;width:100%"></textarea>
+          </div>
+          <div style="text-align:right;font-size:11px;color:var(--text-xs);margin-top:3px"><span id="tl-analysis-count">0</span>/250</div>
+        </div>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--ink);padding:14px 16px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink);margin-bottom:8px">05 — Report Published</div>
+          <div style="display:grid;grid-template-columns:160px 1fr;gap:10px;align-items:start">
+            <input type="date" id="tl-published-date" style="padding:8px 10px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none;width:100%"/>
+            <textarea id="tl-published-desc" maxlength="250" placeholder="e.g. Full research report published with downloadable PDF and interactive dashboard…" style="padding:8px 10px;border:1.5px solid var(--border);font-family:var(--font-body);font-size:13px;color:var(--text);background:var(--bg);outline:none;resize:none;height:60px;width:100%"></textarea>
+          </div>
+          <div style="text-align:right;font-size:11px;color:var(--text-xs);margin-top:3px"><span id="tl-published-count">0</span>/250</div>
+        </div>
+
+      </div>
+    </div>
+
     <div class="modal-footer">
       <button class="btn btn-outline" data-close="project-modal">Cancel</button>
       <button class="btn btn-primary" id="save-project-btn">Save Project</button>
@@ -1196,7 +1251,8 @@ $('search-projects').oninput = e => {
 
 $('add-project-btn').onclick = () => {
   $('project-modal-title').textContent = 'Add Project';
-  ['project-id','proj-title','proj-location','proj-period','proj-desc','proj-quote','proj-writeup','proj-powerbi','proj-sponsor','proj-image','proj-pdf','proj-dataset','proj-methodology','proj-presentation','finding-1-metric','finding-1-label','finding-2-metric','finding-2-label','finding-3-metric','finding-3-label','finding-4-metric','finding-4-label'].forEach(id => $(id).value=''); ['proj-pdf-prog','proj-dataset-prog','proj-method-prog','proj-pptx-prog'].forEach(id => { const el=$(id); if(el) el.textContent=''; });
+  ['project-id','proj-title','proj-location','proj-period','proj-desc','proj-quote','proj-writeup','proj-powerbi','proj-sponsor','proj-image','proj-pdf','proj-dataset','proj-methodology','proj-presentation','finding-1-metric','finding-1-label','finding-2-metric','finding-2-label','finding-3-metric','finding-3-label','finding-4-metric','finding-4-label','tl-approved-date','tl-approved-desc','tl-fieldstart-date','tl-fieldstart-desc','tl-datacomplete-date','tl-datacomplete-desc','tl-analysis-date','tl-analysis-desc','tl-published-date','tl-published-desc'].forEach(id => $(id).value='');
+  ['tl-approved-count','tl-fieldstart-count','tl-datacomplete-count','tl-analysis-count','tl-published-count'].forEach(id => { const el=$(id); if(el) el.textContent='0'; }); ['proj-pdf-prog','proj-dataset-prog','proj-method-prog','proj-pptx-prog'].forEach(id => { const el=$(id); if(el) el.textContent=''; });
   $('proj-responses').value=''; $('proj-category').value=''; $('proj-status').value='ongoing';
   if($('proj-sponsor-search')) $('proj-sponsor-search').value='';
   showModal('project-modal');
@@ -1230,6 +1286,46 @@ window.editProject = id => {
   $('proj-methodology').value= p.methodology||'';
   $('proj-presentation').value= p.presentation||'';
   $('proj-pdf').value        = p.pdf||'';
+
+  // Pre-fill findings
+  if(Array.isArray(p.findings)){
+    p.findings.forEach((f,i)=>{
+      const m=$('finding-'+(i+1)+'-metric'); const l=$('finding-'+(i+1)+'-label');
+      if(m) m.value=f.metric||''; if(l) l.value=f.label||'';
+    });
+  }
+  toggleFindingsFields(p.status||'ongoing');
+
+  // Pre-fill timeline milestones
+  const tlKeys = ['approved','fieldstart','datacomplete','analysis','published'];
+  if(Array.isArray(p.timeline)){
+    p.timeline.forEach((m,i) => {
+      if(i >= tlKeys.length) return;
+      const dk = document.getElementById('tl-'+tlKeys[i]+'-date');
+      const tk = document.getElementById('tl-'+tlKeys[i]+'-desc');
+      const ck = document.getElementById('tl-'+tlKeys[i]+'-count');
+      if(dk) dk.value = m.date||'';
+      if(tk) tk.value = m.description||'';
+      if(ck) ck.textContent = (m.description||'').length;
+    });
+  } else {
+    tlKeys.forEach(k => {
+      const dk = document.getElementById('tl-'+k+'-date');
+      const tk = document.getElementById('tl-'+k+'-desc');
+      const ck = document.getElementById('tl-'+k+'-count');
+      if(dk) dk.value = '';
+      if(tk) tk.value = '';
+      if(ck) ck.textContent = '0';
+    });
+  }
+
+  setTimeout(()=>{
+    initQuillEditors();
+    setQuill(projDescEditor, p?.description||'');
+    setQuill(projWriteupEditor, p?.writeup||'');
+    renderProjectCheckboxes(Array.isArray(p?.projects) ? p.projects : []);
+  }, 120);
+
   showModal('project-modal');
 };
 
@@ -1248,6 +1344,13 @@ $('save-project-btn').onclick = async () => {
     quote:$('proj-quote').value.trim(),
     writeup:$('proj-writeup').value.trim(),
     powerbi:$('proj-powerbi').value.trim(),
+    timeline: [
+      { label:'Project Approved',        date:($('tl-approved-date')?.value||''),     description:($('tl-approved-desc')?.value||'').trim() },
+      { label:'Field Research Begins',   date:($('tl-fieldstart-date')?.value||''),   description:($('tl-fieldstart-desc')?.value||'').trim() },
+      { label:'Data Collection Complete',date:($('tl-datacomplete-date')?.value||''), description:($('tl-datacomplete-desc')?.value||'').trim() },
+      { label:'Analysis Phase',          date:($('tl-analysis-date')?.value||''),     description:($('tl-analysis-desc')?.value||'').trim() },
+      { label:'Report Published',        date:($('tl-published-date')?.value||''),    description:($('tl-published-desc')?.value||'').trim() },
+    ],
     findings: [
       { metric: ($('finding-1-metric')?.value||'').trim(), label: ($('finding-1-label')?.value||'').trim() },
       { metric: ($('finding-2-metric')?.value||'').trim(), label: ($('finding-2-label')?.value||'').trim() },
@@ -2106,6 +2209,16 @@ window.toggleFindingsFields = function(status){
   const ff = document.getElementById('findings-fields');
   if(ff) ff.style.display = (status === 'completed') ? 'block' : 'none';
 };
+
+
+/* ── TIMELINE CHAR COUNTERS ── */
+['approved','fieldstart','datacomplete','analysis','published'].forEach(key => {
+  const ta = document.getElementById('tl-'+key+'-desc');
+  const ct = document.getElementById('tl-'+key+'-count');
+  if(ta && ct){
+    ta.addEventListener('input', () => { ct.textContent = ta.value.length; ct.style.color = ta.value.length > 230 ? 'var(--red)' : 'var(--text-xs)'; });
+  }
+});
 
 </script>
 </body>
