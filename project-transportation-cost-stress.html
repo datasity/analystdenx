@@ -94,10 +94,12 @@
 }
 @media(max-width:600px){#contributors-strip [style*="repeat(4"]{grid-template-columns:repeat(2,1fr)!important}}
 .pd-hero-imgcard img {
-  width: 100%; height: auto;
+  width: 100%;
+  height: auto;
+  min-height: 200px;
   display: block;
-  object-fit: contain;
-  object-position: center top;
+  object-fit: cover;
+  object-position: center;
   background: #f5f5f0;
 }
 
@@ -501,7 +503,17 @@ async function loadProject(){
     if(chips[2]) chips[2].textContent = 'Field Research';
 
     // Image
-    if(p.image){ const imgEl=document.getElementById('hero-project-img'); if(imgEl) imgEl.src=p.image; }
+    // Project image
+    const imgEl = document.getElementById('hero-project-img');
+    if(imgEl){
+      if(p.image){
+        imgEl.src = p.image;
+        imgEl.alt = p.title||'Project image';
+        imgEl.onerror = function(){ this.src = 'assets/trans.png'; };
+      }
+      // Always make image visible
+      imgEl.style.display = 'block';
+    }
 
     // Stats
     const statNums = document.querySelectorAll('.data-number');
@@ -567,13 +579,25 @@ async function loadProject(){
     // Load contributors assigned to this project
     if(p.title){
       const contribSnap = await getDocs(collection(db,'contributors'));
+      const pTitle = (p.title||'').toLowerCase().trim();
       const assigned = contribSnap.docs.map(d=>({id:d.id,...d.data()}))
-        .filter(c => Array.isArray(c.projects) && c.projects.some(proj =>
-          proj.toLowerCase().includes(p.title.toLowerCase().substring(0,10))
-        ));
+        .filter(c => {
+          if(!Array.isArray(c.projects) || !c.projects.length) return false;
+          return c.projects.some(proj => {
+            const pr = (proj||'').toLowerCase().trim();
+            // Match by: exact title, title starts with proj, proj starts with title, or shared 6+ char substring
+            return pr === pTitle
+              || pTitle.startsWith(pr.substring(0,6))
+              || pr.startsWith(pTitle.substring(0,6))
+              || (pTitle.length > 5 && pr.includes(pTitle.substring(0,6)))
+              || (pr.length > 5 && pTitle.includes(pr.substring(0,6)));
+          });
+        });
 
       const teamSec = document.getElementById('team-section');
       const strip = document.getElementById('contributors-strip');
+      // Debug: log what we found
+      console.log('Project title:', p.title, '| Contributors found:', assigned.length, '| All contributors:', contribSnap.docs.length);
       if(assigned.length && teamSec && strip){
         teamSec.style.display = 'block';
         strip.innerHTML = '';
