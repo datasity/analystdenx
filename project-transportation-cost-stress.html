@@ -221,33 +221,40 @@
 
 /* The vertical line */
 .timeline-track {
-  position:relative;padding-left:36px;
+  position:relative;
+  padding-left:44px;
 }
 .timeline-track::before {
-  content:'';position:absolute;left:10px;top:12px;bottom:12px;
-  width:2px;background:linear-gradient(to bottom, var(--gold,#B8860B) var(--fill,0%), var(--border,#D8D2C8) var(--fill,0%));
+  content:'';position:absolute;
+  left:16px;          /* centre of dot: padding(44) - half-dot(7) - border(2) = ~left:16 */
+  top:18px;bottom:8px;
+  width:2px;
+  background:linear-gradient(to bottom, var(--gold,#B8860B) var(--fill,0%), var(--border,#D8D2C8) var(--fill,0%));
 }
 
 /* Each milestone */
 .tl-item {
-  position:relative;margin-bottom:36px;
+  position:relative;margin-bottom:32px;
 }
 .tl-item:last-child { margin-bottom:0; }
 
 .tl-dot {
-  position:absolute;left:-36px;top:3px;
-  width:14px;height:14px;border-radius:50%;
+  position:absolute;
+  left:-44px;          /* pull back exactly = padding-left */
+  top:2px;
+  width:18px;height:18px;border-radius:50%;
   border:2px solid var(--border,#D8D2C8);
   background:var(--bg,#F6F3ED);
   transition:all 0.3s;
   display:flex;align-items:center;justify-content:center;
+  /* Line sits at left:16px = left(-44) + 18px dot + 2px border / 2 ≈ centre */
 }
 .tl-item.done .tl-dot {
   background:var(--forest,#1F4D3A);
   border-color:var(--forest,#1F4D3A);
 }
 .tl-item.done .tl-dot::after {
-  content:'';width:5px;height:5px;border-radius:50%;background:#fff;
+  content:'';width:6px;height:6px;border-radius:50%;background:#fff;
 }
 .tl-item.current .tl-dot {
   background:var(--bg,#F6F3ED);
@@ -255,7 +262,7 @@
   border-width:2px;
 }
 .tl-item.current .tl-dot::after {
-  content:'';width:6px;height:6px;border-radius:50%;
+  content:'';width:7px;height:7px;border-radius:50%;
   background:#B8860B;
   animation:tlAmberPulse 1.8s ease-in-out infinite;
 }
