@@ -255,6 +255,11 @@
   .tl-title{font-size:17px;}
   .tl-grid{grid-template-columns:44px 1fr;}
 }
+@media(max-width:600px){
+  #contributors-strip [style*="grid-template-columns:repeat(4"]{
+    grid-template-columns:repeat(2,1fr) !important;
+  }
+}
 </style>
 
 <style>
@@ -381,6 +386,17 @@
 
   </div>
 </div>
+
+<!-- ══ TIMELINE SECTION (shown/hidden by button) ══ -->
+<section id="timeline-section" style="display:none;background:var(--bg-alt,#EDEBE4);border-top:3px solid #B8860B;border-bottom:1px solid var(--border,#D8D2C8)">
+  <div class="container" style="padding-top:0;padding-bottom:0">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 0;border-bottom:1px solid var(--border,#D8D2C8)">
+      <span class="eyebrow-text">Project Timeline</span>
+      <button onclick="closeTimeline()" style="background:none;border:1px solid var(--border,#D8D2C8);padding:7px 16px;font-family:var(--font-data);font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:var(--ink-lt,#6B6560);cursor:pointer;transition:all 0.2s">✕ Close</button>
+    </div>
+    <div id="timeline-track"></div>
+  </div>
+</section>
 
 <!-- ══════════════════════════════
      OVERVIEW + METHODOLOGY
@@ -616,7 +632,7 @@ async function loadProject(){
       const assigned=cSnap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>Array.isArray(c.projects)&&c.projects.some(pr=>(p.title||'').toLowerCase().includes((pr||'').toLowerCase().substring(0,8))||(pr||'').toLowerCase().includes((p.title||'').toLowerCase().substring(0,8))));
       if(assigned.length){
         teamSec.style.display='block';
-        strip.innerHTML=assigned.map(c=>`<div class="contributor-col"><div class="contributor-avatar"><img src="${c.avatar||'assets/avatars/contr-1.png'}" alt="${c.name||''}" onerror="this.src='assets/avatars/contr-1.png'"/></div><p class="contributor-name">${c.name||'—'}</p><p class="contributor-role">${c.role||''}</p></div>`).join('');
+        // team render handled below
       }
     }
 
@@ -698,26 +714,35 @@ async function loadProject(){
         ));
 
       if(assigned.length){
-        const strip = document.querySelector('.contributors-strip');
-        if(strip){
-          // Build team grid
-strip.innerHTML = '';
-        const gridEl = document.createElement('div');
-gridEl.className = 'team-grid';
-gridEl.innerHTML = assigned.map((c, i) => {
-  const initials = (c.name||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-  const avatarHtml = c.avatar
-    ? `<img src="${c.avatar}" alt="${c.name||''}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-       <div class="team-avatar-initials" style="display:none">${initials}</div>`
-    : `<div class="team-avatar-initials">${initials}</div>`;
-  return `
-    <div class="team-card" style="animation-delay:${i * 60}ms">
-      <div class="team-avatar-wrap">${avatarHtml}</div>
-      <div class="team-name">${c.name||'—'}</div>
-      <div class="team-role">${c.role||''}</div>
-    </div>`;
-}).join('');
-strip.appendChild(gridEl);
+        var strip = document.getElementById('contributors-strip');
+        var teamSec2 = document.getElementById('team-section');
+        if(strip && teamSec2){
+          teamSec2.style.display = 'block';
+          var SHOW = 4;
+          var showAll = false;
+          function buildTeamGrid(){
+            strip.innerHTML = '';
+            var visible = showAll ? assigned : assigned.slice(0, SHOW);
+            var grid = document.createElement('div');
+            grid.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border,#D8D2C8);border:1px solid var(--border,#D8D2C8)';
+            grid.innerHTML = visible.map(function(c,i){
+              var initials = (c.name||'?').split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2).toUpperCase();
+              var av = c.avatar
+                ? '<img src="'+c.avatar+'" alt="'+(c.name||'')+'" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--border,#D8D2C8);display:block;margin:0 auto 14px;transition:border-color 0.25s" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div style="display:none;width:72px;height:72px;border-radius:50%;background:var(--bg-alt,#EDEBE4);border:2px solid var(--border,#D8D2C8);align-items:center;justify-content:center;font-family:var(--font-data);font-weight:800;font-size:20px;color:var(--ink-lt,#6B6560);margin:0 auto 14px">'+initials+'</div>'
+                : '<div style="display:flex;width:72px;height:72px;border-radius:50%;background:var(--bg-alt,#EDEBE4);border:2px solid var(--border,#D8D2C8);align-items:center;justify-content:center;font-family:var(--font-data);font-weight:800;font-size:20px;color:var(--ink-lt,#6B6560);margin:0 auto 14px">'+initials+'</div>';
+              return '<div style="background:var(--bg,#F6F3ED);padding:28px 12px 20px;text-align:center;cursor:default;transition:background 0.2s,transform 0.2s;position:relative;overflow:hidden;animation:teamCardIn 0.4s ease '+(i*60)+'ms both" onmouseover="this.style.background='#fff';this.style.transform='translateY(-2px)';this.querySelector('img')?this.querySelector('img').style.borderColor='#B8860B':(null)" onmouseout="this.style.background='var(--bg,#F6F3ED)';this.style.transform='translateY(0)'">'+av+'<div style="font-family:var(--font-display,Georgia,serif);font-weight:600;font-size:15px;color:var(--ink,#111);margin-bottom:5px">'+(c.name||'—')+'</div><div style="font-family:var(--font-data);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-lt,#6B6560)">'+(c.role||'')+'</div></div>';
+            }).join('');
+            strip.appendChild(grid);
+            // See more / less button
+            if(assigned.length > SHOW){
+              var btn2 = document.createElement('div');
+              btn2.style.cssText = 'text-align:center;padding:16px';
+              btn2.innerHTML = '<button onclick="window._teamToggle()" style="background:none;border:1.5px solid var(--border,#D8D2C8);padding:9px 28px;font-family:var(--font-data);font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:var(--ink-lt,#6B6560);cursor:pointer;transition:all 0.2s">'+(showAll ? '↑ Show Less' : 'See All '+assigned.length+' Contributors ↓')+'</button>';
+              strip.appendChild(btn2);
+            }
+          }
+          window._teamToggle = function(){ showAll = !showAll; buildTeamGrid(); };
+          buildTeamGrid();
         }
       }
     }
@@ -733,21 +758,21 @@ window.openTimeline = function(){
   const sec = document.getElementById('timeline-section');
   if(!sec) return;
   if(_timelineData) renderTimeline(_timelineData);
-  sec.classList.add('visible');
-  // Smooth scroll to top of timeline section
-  setTimeout(()=>{
-    sec.scrollIntoView({ behavior:'smooth', block:'start' });
-  }, 50);
-  // Change button text
-  const btn = document.getElementById('timeline-btn');
-  if(btn){ btn.textContent = 'Hide Timeline ↑'; btn.onclick = closeTimeline; }
+  sec.style.display = 'block';
+  // Scroll to the section smoothly
+  setTimeout(function(){
+    var top = sec.getBoundingClientRect().top + window.pageYOffset - 80;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+  }, 60);
+  var btn = document.getElementById('timeline-btn');
+  if(btn){ btn.textContent = 'Hide Timeline ↑'; btn.onclick = function(){ closeTimeline(); }; }
 };
 
 window.closeTimeline = function(){
-  const sec = document.getElementById('timeline-section');
-  if(sec) sec.classList.remove('visible');
-  const btn = document.getElementById('timeline-btn');
-  if(btn){ btn.textContent = 'Project Timeline →'; btn.onclick = openTimeline; }
+  var sec = document.getElementById('timeline-section');
+  if(sec) sec.style.display = 'none';
+  var btn = document.getElementById('timeline-btn');
+  if(btn){ btn.textContent = 'Project Timeline →'; btn.onclick = function(){ openTimeline(); }; }
 };
 
 // Close on Escape
