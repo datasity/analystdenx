@@ -168,6 +168,139 @@
   50%    { opacity:1; }
 }
 
+
+/* ══ PROJECT TIMELINE DRAWER ══ */
+.timeline-overlay {
+  position:fixed;inset:0;background:rgba(0,0,0,0);
+  z-index:800;pointer-events:none;
+  transition:background 0.4s ease;
+}
+.timeline-overlay.open {
+  background:rgba(0,0,0,0.55);pointer-events:all;
+}
+.timeline-drawer {
+  position:fixed;top:0;left:0;bottom:0;
+  width:min(520px,96vw);
+  background:var(--bg,#F6F3ED);
+  border-right:1px solid var(--border,#D8D2C8);
+  z-index:801;
+  transform:translateX(-100%);
+  transition:transform 0.45s cubic-bezier(0.4,0,0.2,1);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.timeline-drawer.open { transform:translateX(0); }
+
+.timeline-drawer-head {
+  padding:24px 28px 20px;
+  border-bottom:1px solid var(--border,#D8D2C8);
+  display:flex;align-items:flex-start;justify-content:space-between;
+  flex-shrink:0;background:var(--ink,#111);
+}
+.timeline-drawer-head h2 {
+  font-family:var(--font-display,'Cormorant Garamond',Georgia,serif);
+  font-weight:600;font-size:22px;color:#fff;
+  line-height:1.2;margin-bottom:4px;
+}
+.timeline-drawer-head p {
+  font-family:var(--font-data,'Barlow Condensed',sans-serif);
+  font-size:11px;letter-spacing:0.10em;text-transform:uppercase;
+  color:rgba(255,255,255,0.45);
+}
+.timeline-close {
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
+  color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background 0.2s;flex-shrink:0;margin-left:16px;margin-top:2px;
+}
+.timeline-close:hover { background:rgba(255,255,255,0.18); }
+
+.timeline-body {
+  flex:1;overflow-y:auto;padding:32px 28px 40px;
+}
+
+/* The vertical line */
+.timeline-track {
+  position:relative;padding-left:36px;
+}
+.timeline-track::before {
+  content:'';position:absolute;left:10px;top:12px;bottom:12px;
+  width:2px;background:linear-gradient(to bottom, var(--gold,#B8860B) var(--fill,0%), var(--border,#D8D2C8) var(--fill,0%));
+}
+
+/* Each milestone */
+.tl-item {
+  position:relative;margin-bottom:36px;
+}
+.tl-item:last-child { margin-bottom:0; }
+
+.tl-dot {
+  position:absolute;left:-36px;top:3px;
+  width:14px;height:14px;border-radius:50%;
+  border:2px solid var(--border,#D8D2C8);
+  background:var(--bg,#F6F3ED);
+  transition:all 0.3s;
+  display:flex;align-items:center;justify-content:center;
+}
+.tl-item.done .tl-dot {
+  background:var(--forest,#1F4D3A);
+  border-color:var(--forest,#1F4D3A);
+}
+.tl-item.done .tl-dot::after {
+  content:'';width:5px;height:5px;border-radius:50%;background:#fff;
+}
+.tl-item.current .tl-dot {
+  background:var(--bg,#F6F3ED);
+  border-color:#B8860B;
+  border-width:2px;
+}
+.tl-item.current .tl-dot::after {
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:#B8860B;
+  animation:tlAmberPulse 1.8s ease-in-out infinite;
+}
+@keyframes tlAmberPulse {
+  0%,100%{ transform:scale(1);opacity:1; }
+  50%    { transform:scale(1.35);opacity:0.7; }
+}
+.tl-item.pending .tl-dot {
+  background:var(--bg,#F6F3ED);
+  border-color:#C4BDB0;
+}
+
+.tl-date {
+  font-family:var(--font-data,'Barlow Condensed',sans-serif);
+  font-size:11px;font-weight:700;letter-spacing:0.10em;
+  text-transform:uppercase;margin-bottom:5px;
+}
+.tl-item.done .tl-date    { color:var(--forest,#1F4D3A); }
+.tl-item.current .tl-date { color:#B8860B; }
+.tl-item.pending .tl-date { color:#C4BDB0; }
+
+.tl-title {
+  font-family:var(--font-display,'Cormorant Garamond',Georgia,serif);
+  font-weight:600;font-size:18px;line-height:1.2;
+  margin-bottom:6px;
+}
+.tl-item.done .tl-title    { color:var(--ink,#111); }
+.tl-item.current .tl-title { color:var(--ink,#111); }
+.tl-item.pending .tl-title { color:#9E9890; }
+
+.tl-desc {
+  font-family:var(--font-body,'Lora',Georgia,serif);
+  font-size:14px;line-height:1.7;
+}
+.tl-item.done .tl-desc    { color:var(--text-mid,#3A3832); }
+.tl-item.current .tl-desc { color:var(--text-mid,#3A3832); }
+.tl-item.pending .tl-desc { color:#B0A99F; font-style:italic; }
+
+.tl-empty {
+  text-align:center;padding:48px 20px;
+  font-family:var(--font-data,'Barlow Condensed',sans-serif);
+  font-size:13px;letter-spacing:0.06em;text-transform:uppercase;
+  color:#9E9890;
+}
+
 </style>
 
 <style>
@@ -280,7 +413,7 @@
       </div>
       <div class="pd-hero-actions">
         <a href="get-involved.html" class="btn" style="background:transparent;color:#ffffff;border:1.5px solid rgba(255,255,255,0.7);font-family:var(--font-data);font-weight:700;font-size:12px;letter-spacing:0.10em;text-transform:uppercase;padding:13px 28px;">Become a Contributor</a>
-        <a href="assets/report.pdf" class="btn btn--primary" download>Download Report (PDF)</a>
+        <button onclick="openTimeline()" class="btn btn--primary" id="timeline-btn">Project Timeline →</button>
       </div>
       <p class="pd-hero-countdown">
         Next update in <span id="countdown-timer">Loading…</span>
@@ -294,32 +427,6 @@
 
   </div>
 </div>
-
-<!-- ══════════════════════════════
-     KEY NUMBERS
-══════════════════════════════ -->
-<section>
-  <div class="container">
-    <div class="data-numbers" id="stats-strip">
-      <div class="data-number-col">
-        <div class="data-number" id="stat-1">1,240</div>
-        <div class="data-number-label" id="stat-1-label">Survey Responses</div>
-      </div>
-      <div class="data-number-col">
-        <div class="data-number" id="stat-2">12</div>
-        <div class="data-number-label" id="stat-2-label">LGA Coverage Areas</div>
-      </div>
-      <div class="data-number-col">
-        <div class="data-number" id="stat-3">72%</div>
-        <div class="data-number-label" id="stat-3-label">Report High Transport Burden</div>
-      </div>
-      <div class="data-number-col">
-        <div class="data-number" id="stat-4">5</div>
-        <div class="data-number-label" id="stat-4-label">Research Contributors</div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- ══════════════════════════════
      OVERVIEW + METHODOLOGY
@@ -481,6 +588,7 @@ async function loadProject(){
       if(el.textContent.includes('Transportation Cost Stress')) el.textContent = p.title||'';
     });
     document.title = `${p.title||'Project'} — Analyst Den`;
+    storeTimelineData(p);
 
     // Hero eyebrow
     const eyebrow = document.querySelector('.pd-hero-eyebrow');
@@ -653,6 +761,88 @@ async function loadProject(){
   } catch(e){ console.error('Project detail load error:', e); }
 }
 
+
+/* ══ PROJECT TIMELINE ══ */
+let _timelineData = null;
+
+window.openTimeline = function(){
+  document.getElementById('timeline-overlay').classList.add('open');
+  document.getElementById('timeline-drawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if(_timelineData) renderTimeline(_timelineData);
+};
+
+window.closeTimeline = function(){
+  document.getElementById('timeline-overlay').classList.remove('open');
+  document.getElementById('timeline-drawer').classList.remove('open');
+  document.body.style.overflow = '';
+};
+
+// Close on Escape
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeTimeline(); });
+
+function renderTimeline(p){
+  const track = document.getElementById('timeline-track');
+  const nameEl = document.getElementById('tl-project-name');
+  if(nameEl) nameEl.textContent = p.title || 'Project Timeline';
+
+  // Default 5 milestones — override with project data if available
+  const defaultMilestones = [
+    { key:'approved',    label:'Project Approved',       desc:'Project formally approved and added to the Analyst Den research pipeline.' },
+    { key:'fieldStart',  label:'Field Research Begins',  desc:'Field researchers deployed to target locations to begin data collection.' },
+    { key:'dataComplete',label:'Data Collection Complete',desc:'All survey responses collected and raw data secured for cleaning.' },
+    { key:'analysis',    label:'Analysis Phase',         desc:'Data cleaned, validated and analysed using Power BI and Python.' },
+    { key:'published',   label:'Report Published',       desc:'Findings published as a public insights report with downloadable PDF.' },
+  ];
+
+  // Use project timeline data if available, else use defaults
+  const milestones = (p.timeline && p.timeline.length)
+    ? p.timeline
+    : defaultMilestones.map(m => ({
+        label:       m.label,
+        description: p[m.key+'Date'] ? '' : m.desc,
+        date:        p[m.key+'Date'] || '',
+      }));
+
+  const today = new Date();
+  let doneCount = 0;
+
+  const items = milestones.map((m, i) => {
+    const hasDate = m.date && m.date.trim();
+    const milestoneDate = hasDate ? new Date(m.date) : null;
+    const isPast    = milestoneDate && milestoneDate < today;
+    const isToday   = milestoneDate && Math.abs(milestoneDate - today) < 86400000;
+    const isFuture  = milestoneDate && milestoneDate > today;
+    const isEmpty   = !hasDate;
+
+    let state = 'pending';
+    if(isPast || isToday)  { state = 'done'; doneCount++; }
+    // Find the first future/empty after done items = current
+    if(isEmpty && i === doneCount) state = 'current';
+    if(isFuture && i === doneCount) state = 'current';
+
+    const dateStr = hasDate
+      ? new Date(m.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})
+      : (state === 'current' ? 'In Progress' : 'Scheduled');
+
+    return `
+    <div class="tl-item ${state}">
+      <div class="tl-dot"></div>
+      <div class="tl-date">${dateStr}</div>
+      <div class="tl-title">${m.label||m.title||'—'}</div>
+      ${m.description||m.desc ? `<div class="tl-desc">${m.description||m.desc}</div>` : ''}
+    </div>`;
+  });
+
+  // Update the gradient fill on the vertical line
+  const fillPct = Math.round((doneCount / milestones.length) * 100);
+  track.style.setProperty('--fill', fillPct + '%');
+  track.innerHTML = items.join('') || '<div class="tl-empty">No timeline data yet</div>';
+}
+
+// Called from Firebase loader — store data for timeline use
+function storeTimelineData(p){ _timelineData = p; }
+
 loadProject();
 
 /* ── POWER BI MODAL ── */
@@ -682,5 +872,23 @@ document.getElementById('pbi-modal')?.addEventListener('click', function(e){
 document.addEventListener('keydown', e => { if(e.key==='Escape') closePBI(); });
 
 </script>
+
+<!-- ══ PROJECT TIMELINE DRAWER ══ -->
+<div class="timeline-overlay" id="timeline-overlay" onclick="closeTimeline()"></div>
+<div class="timeline-drawer" id="timeline-drawer">
+  <div class="timeline-drawer-head">
+    <div>
+      <h2 id="tl-project-name">Project Timeline</h2>
+      <p>Research milestones & progress</p>
+    </div>
+    <button class="timeline-close" onclick="closeTimeline()">✕</button>
+  </div>
+  <div class="timeline-body">
+    <div class="timeline-track" id="timeline-track">
+      <div class="tl-empty">Loading timeline…</div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
