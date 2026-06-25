@@ -79,16 +79,25 @@
   margin: 48px 0;
 }
 .pd-hero-imgcard-title {
-  display: none;
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #e8e4de;
+  background: #ffffff;
 }
-.pd-hero-imgcard-icon { display:none; }
-.pd-hero-imgcard-label { display:none; }
+.pd-hero-imgcard-icon {
+  font-size: 18px;
+}
+.pd-hero-imgcard-label {
+  font-family: var(--font-data); font-weight: 700;
+  font-size: 13px; color: #111111;
+  letter-spacing: 0.01em;
+}
 .pd-hero-imgcard img {
   width: 100%; height: auto;
   display: block;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center top;
   background: #f5f5f0;
-  margin-top: -52px; /* crop the title bar baked into image */
 }
 
 /* RESPONSIVE */
@@ -156,7 +165,7 @@
 }
 @keyframes spin{ to{transform:rotate(360deg)} }
 
-/* ── TIMELINE SECTION ── */
+/* ── TIMELINE ── */
 @keyframes tlAmberPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.6);opacity:0.6}}
 </style>
 </head>
@@ -239,6 +248,32 @@
   </div>
 </div>
 
+<!-- ══════════════════════════════
+     KEY NUMBERS
+══════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="data-numbers">
+      <div class="data-number-col">
+        <div class="data-number">1,240</div>
+        <div class="data-number-label">Survey Responses</div>
+      </div>
+      <div class="data-number-col">
+        <div class="data-number">12</div>
+        <div class="data-number-label">LGA Coverage Areas</div>
+      </div>
+      <div class="data-number-col">
+        <div class="data-number">72%</div>
+        <div class="data-number-label">Report High Transport Burden</div>
+      </div>
+      <div class="data-number-col">
+        <div class="data-number">5</div>
+        <div class="data-number-label">Research Contributors</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ══ TIMELINE SECTION ══ -->
 <section id="timeline-section" style="display:none;background:#EDEBE4;border-top:3px solid #B8860B;border-bottom:1px solid #D8D2C8">
   <div class="container" style="padding-top:0;padding-bottom:0">
@@ -249,8 +284,6 @@
     <div id="timeline-track"></div>
   </div>
 </section>
-
-
 
 <!-- ══════════════════════════════
      OVERVIEW + METHODOLOGY
@@ -293,7 +326,7 @@
 </section>
 
 <!-- ══════════════════════════════
-     KEY FINDINGS — only shown when project is completed
+     KEY FINDINGS — only shown when completed
 ══════════════════════════════ -->
 <section id="findings-section" style="display:none;background:var(--bg-alt);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
   <div class="container">
@@ -491,18 +524,16 @@ async function loadProject(){
     const quoteEl = document.querySelector('.pull-quote');
     if(quoteEl && p.quote) quoteEl.textContent = `"${p.quote}"`;
 
-    // Key Findings — only show when completed and findings exist
+    // Key Findings — only show when completed
     const findSec  = document.getElementById('findings-section');
     const findGrid = document.getElementById('findings-grid');
     const isCompleted = (p.status||'').toLowerCase() === 'completed';
     if(isCompleted && Array.isArray(p.findings) && p.findings.length && findSec && findGrid){
-      findGrid.innerHTML = p.findings
-        .filter(f => f.metric)
-        .map(f => `
-          <div class="finding-col">
-            <div class="finding-num">${f.metric}</div>
-            <div class="finding-label">${f.label||''}</div>
-          </div>`).join('');
+      findGrid.innerHTML = p.findings.filter(f=>f.metric).map(f=>`
+        <div class="finding-col">
+          <div class="finding-num">${f.metric}</div>
+          <div class="finding-label">${f.label||''}</div>
+        </div>`).join('');
       findSec.style.display = 'block';
     }
 
@@ -565,14 +596,37 @@ async function loadProject(){
       if(assigned.length){
         const strip = document.querySelector('.contributors-strip');
         if(strip){
-          strip.innerHTML = assigned.map(c => `
-            <div class="contributor-col">
-              <div class="contributor-avatar">
-                <img src="${c.avatar||'assets/avatars/contr-1.png'}" alt="${c.name||''}" onerror="this.src='assets/avatars/contr-1.png'"/>
-              </div>
-              <p class="contributor-name">${c.name||'—'}</p>
-              <p class="contributor-role">${c.role||''}</p>
-            </div>`).join('');
+          // Override strip styles for 4-col grid
+          strip.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#D8D2C8;border:1px solid #D8D2C8;';
+
+          const SHOW = 4;
+          let showAll = false;
+
+          function buildTeam(){
+            const visible = showAll ? assigned : assigned.slice(0, SHOW);
+            strip.innerHTML = visible.map(c => {
+              const ini = (c.name||'?').split(' ').map(w=>w[0]||'').join('').substring(0,2).toUpperCase();
+              const av  = c.avatar
+                ? `<img src="${c.avatar}" alt="${c.name||''}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid #D8D2C8;display:block;margin:0 auto 12px" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div style="display:none;width:80px;height:80px;border-radius:50%;background:#EDEBE4;border:2px solid #D8D2C8;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#6B6560;margin:0 auto 12px">${ini}</div>`
+                : `<div style="display:flex;width:80px;height:80px;border-radius:50%;background:#EDEBE4;border:2px solid #D8D2C8;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#6B6560;margin:0 auto 12px">${ini}</div>`;
+              return `<a href="contributor-profile.html?id=${c.id}" style="text-decoration:none;display:block;background:#F6F3ED;padding:28px 12px 20px;text-align:center;transition:background 0.2s;cursor:pointer" onmouseover="this.style.background='#fff'" onmouseout="this.style.background='#F6F3ED'">
+                ${av}
+                <div style="font-family:var(--font-display,Georgia,serif);font-weight:600;font-size:15px;color:#111;margin-bottom:4px">${c.name||'—'}</div>
+                <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#6B6560">${c.role||''}</div>
+              </a>`;
+            }).join('');
+
+            // Add see more/less button if needed
+            if(assigned.length > SHOW){
+              const btnDiv = document.createElement('div');
+              btnDiv.style.cssText = 'grid-column:1/-1;text-align:center;padding:18px;background:#F6F3ED;border-top:1px solid #D8D2C8';
+              btnDiv.innerHTML = `<button onclick="window._teamToggle()" style="background:none;border:1.5px solid #D8D2C8;padding:9px 28px;font-family:var(--font-data,sans-serif);font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:#6B6560;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#111';this.style.color='#111'" onmouseout="this.style.borderColor='#D8D2C8';this.style.color='#6B6560'">${showAll ? '↑ Show Less' : 'See All ' + assigned.length + ' Contributors ↓'}</button>`;
+              strip.appendChild(btnDiv);
+            }
+          }
+
+          window._teamToggle = function(){ showAll = !showAll; buildTeam(); };
+          buildTeam();
         }
       }
     }
@@ -611,9 +665,7 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') closePBI(); });
 </script>
 
 <script>
-/* ══ PROJECT TIMELINE ══ */
 var _tlData = null;
-
 window.openTimeline = function(){
   var sec = document.getElementById('timeline-section');
   if(!sec) return;
@@ -626,73 +678,39 @@ window.openTimeline = function(){
   var btn = document.getElementById('timeline-btn');
   if(btn){ btn.textContent = 'Hide Timeline ↑'; btn.onclick = window.closeTimeline; }
 };
-
 window.closeTimeline = function(){
   var sec = document.getElementById('timeline-section');
   if(sec) sec.style.display = 'none';
   var btn = document.getElementById('timeline-btn');
   if(btn){ btn.textContent = 'Project Timeline →'; btn.onclick = window.openTimeline; }
 };
-
 window.setTimelineData = function(p){ _tlData = p; };
-
 function renderTimeline(p){
   var track = document.getElementById('timeline-track');
   if(!track) return;
-
-  var defaults = [
-    { label:'Project Approved',          description:'Project formally approved and added to the Analyst Den research pipeline.' },
-    { label:'Field Research Begins',     description:'Field researchers deployed to target locations to begin data collection.' },
-    { label:'Data Collection Complete',  description:'All survey responses collected and raw data secured for cleaning.' },
-    { label:'Analysis Phase',            description:'Data cleaned, validated and analysed using Power BI and Python.' },
-    { label:'Report Published',          description:'Findings published as a public insights report with downloadable PDF.' }
+  var def = [
+    {label:'Project Approved',description:'Project formally approved and added to the Analyst Den research pipeline.'},
+    {label:'Field Research Begins',description:'Field researchers deployed to target locations to begin data collection.'},
+    {label:'Data Collection Complete',description:'All survey responses collected and raw data secured for cleaning.'},
+    {label:'Analysis Phase',description:'Data cleaned, validated and analysed using Power BI and Python.'},
+    {label:'Report Published',description:'Findings published as a public insights report with downloadable PDF.'}
   ];
-
-  var ms = (p.timeline && p.timeline.length)
-    ? p.timeline
-    : defaults.map(function(m){ return { label: m.label, description: m.description, date: '' }; });
-
+  var ms = (p.timeline && p.timeline.length) ? p.timeline : def.map(function(m){return{label:m.label,description:m.description,date:''};});
   var today = new Date(); today.setHours(0,0,0,0);
-  var foundCurrent = false;
-
-  var html = ms.map(function(m, i){
-    var hasDate = m.date && m.date.trim();
-    var mDate   = hasDate ? new Date(m.date) : null;
-    var isPast  = mDate && mDate <= today;
-    var state   = isPast ? 'done' : (!foundCurrent ? (foundCurrent=true, 'current') : 'pending');
-
-    var num = ('0'+(i+1)).slice(-2);
-
-    var dateStr = hasDate
-      ? new Date(m.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}).toUpperCase()
-      : (state==='current' ? 'IN PROGRESS' : 'SCHEDULED');
-
-    var dotHtml = state==='done'
-      ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#1F4D3A;color:#fff;font-size:9px;font-weight:900;margin-right:6px">&#10003;</span>'
-      : state==='current'
-        ? '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#B8860B;margin-right:8px;animation:tlAmberPulse 1.8s ease-in-out infinite"></span>'
-        : '';
-
-    var numColor  = state==='done' ? '#1F4D3A' : state==='current' ? '#B8860B' : '#C4BDB0';
-    var dateColor = state==='done' ? '#1F4D3A' : state==='current' ? '#B8860B' : '#B0A99F';
-    var titleColor = state==='pending' ? '#9E9890' : '#111';
-    var descColor  = state==='pending' ? '#B0A99F' : '#3A3832';
-    var cardBg     = state==='current' ? 'background:#fff;border-top:3px solid #B8860B;' : 'background:#EDEBE4;';
-    var desc = m.description || m.desc || '';
-
-    return [
-      '<div style="display:grid;grid-template-columns:56px 1fr;border-bottom:1px solid #D8D2C8;' + cardBg + '">',
-        '<div style="padding:28px 0 28px 24px;font-family:var(--font-data,sans-serif);font-weight:800;font-size:13px;letter-spacing:0.04em;border-right:1px solid #D8D2C8;color:' + numColor + '">' + num + '</div>',
-        '<div style="padding:28px 40px 28px 28px;">',
-          '<div style="font-family:var(--font-data,sans-serif);font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;color:' + dateColor + ';display:flex;align-items:center">' + dotHtml + dateStr + '</div>',
-          '<div style="font-family:var(--font-display,Georgia,serif);font-weight:600;font-size:20px;line-height:1.15;color:' + titleColor + '">' + m.label + '</div>',
-          desc ? '<div style="font-size:14px;line-height:1.72;margin-top:8px;color:' + descColor + (state==='pending'?';font-style:italic':'') + '">' + desc + '</div>' : '',
-        '</div>',
-      '</div>'
-    ].join('');
+  var fc = false;
+  track.innerHTML = ms.map(function(m,i){
+    var hd=m.date&&m.date.trim(), md=hd?new Date(m.date):null;
+    var st=(md&&md<=today)?'done':(!fc?(fc=true,'current'):'pending');
+    var num=('0'+(i+1)).slice(-2);
+    var ds=hd?new Date(m.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}).toUpperCase():(st==='current'?'IN PROGRESS':'SCHEDULED');
+    var dot=st==='done'?'<span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#1F4D3A;color:#fff;font-size:9px;font-weight:900;margin-right:6px">✓</span>':st==='current'?'<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#B8860B;margin-right:8px;animation:tlAmberPulse 1.8s ease-in-out infinite"></span>':'';
+    var nc=st==='done'?'#1F4D3A':st==='current'?'#B8860B':'#C4BDB0';
+    var dc=st==='done'?'#1F4D3A':st==='current'?'#B8860B':'#B0A99F';
+    var tc=st==='pending'?'#9E9890':'#111';
+    var bg=st==='current'?'background:#fff;border-top:3px solid #B8860B;':'background:#EDEBE4;';
+    var desc=m.description||m.desc||'';
+    return '<div style="display:grid;grid-template-columns:56px 1fr;border-bottom:1px solid #D8D2C8;'+bg+'"><div style="padding:28px 0 28px 24px;font-family:var(--font-data,sans-serif);font-weight:800;font-size:13px;border-right:1px solid #D8D2C8;color:'+nc+'">'+num+'</div><div style="padding:28px 40px 28px 28px"><div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;color:'+dc+';display:flex;align-items:center">'+dot+ds+'</div><div style="font-family:var(--font-display,Georgia,serif);font-weight:600;font-size:20px;color:'+tc+'">'+m.label+'</div>'+(desc?'<div style="font-size:14px;line-height:1.72;margin-top:8px;color:'+(st==='pending'?'#B0A99F':'#3A3832')+(st==='pending'?';font-style:italic':'')+'">'+(desc)+'</div>':'')+'</div></div>';
   }).join('');
-
-  track.innerHTML = html;
 }
 </script>
 
