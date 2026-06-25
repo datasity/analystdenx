@@ -164,6 +164,9 @@
   animation:spin 0.8s linear infinite;
 }
 @keyframes spin{ to{transform:rotate(360deg)} }
+
+/* ── TIMELINE SECTION ── */
+@keyframes tlAmberPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.6);opacity:0.6}}
 </style>
 </head>
 <body>
@@ -226,7 +229,7 @@
       </div>
       <div class="pd-hero-actions">
         <a href="get-involved.html" class="btn" style="background:transparent;color:#ffffff;border:1.5px solid rgba(255,255,255,0.7);font-family:var(--font-data);font-weight:700;font-size:12px;letter-spacing:0.10em;text-transform:uppercase;padding:13px 28px;">Become a Contributor</a>
-        <a href="assets/report.pdf" class="btn btn--primary" download>Download Report (PDF)</a>
+        <button id="timeline-btn" onclick="window.openTimeline()" class="btn btn--primary">Project Timeline →</button>
       </div>
       <p class="pd-hero-countdown">
         Next update in <span id="countdown-timer">Loading…</span>
@@ -244,6 +247,17 @@
 
   </div>
 </div>
+
+<!-- ══ TIMELINE SECTION ══ -->
+<section id="timeline-section" style="display:none;background:#EDEBE4;border-top:3px solid #B8860B;border-bottom:1px solid #D8D2C8">
+  <div class="container" style="padding-top:0;padding-bottom:0">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid #D8D2C8">
+      <span style="font-family:var(--font-data);font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#6B6560">Project Timeline</span>
+      <button onclick="window.closeTimeline()" style="background:none;border:1px solid #D8D2C8;padding:7px 16px;font-family:var(--font-data);font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:#6B6560;cursor:pointer">✕ Close</button>
+    </div>
+    <div id="timeline-track"></div>
+  </div>
+</section>
 
 <!-- ══════════════════════════════
      KEY NUMBERS
@@ -494,6 +508,7 @@ async function loadProject(){
       if(el.textContent.includes('Transportation Cost Stress')) el.textContent = p.title||'';
     });
     document.title = `${p.title||'Project'} — Analyst Den`;
+    window.setTimelineData(p);
 
     // Hero eyebrow
     const eyebrow = document.querySelector('.pd-hero-eyebrow');
@@ -629,5 +644,92 @@ document.getElementById('pbi-modal')?.addEventListener('click', function(e){
 document.addEventListener('keydown', e => { if(e.key==='Escape') closePBI(); });
 
 </script>
+
+<script>
+/* ══ PROJECT TIMELINE ══ */
+var _tlData = null;
+
+window.openTimeline = function(){
+  var sec = document.getElementById('timeline-section');
+  if(!sec) return;
+  if(_tlData) renderTimeline(_tlData);
+  sec.style.display = 'block';
+  setTimeout(function(){
+    var top = sec.getBoundingClientRect().top + window.pageYOffset - 80;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+  }, 60);
+  var btn = document.getElementById('timeline-btn');
+  if(btn){ btn.textContent = 'Hide Timeline ↑'; btn.onclick = window.closeTimeline; }
+};
+
+window.closeTimeline = function(){
+  var sec = document.getElementById('timeline-section');
+  if(sec) sec.style.display = 'none';
+  var btn = document.getElementById('timeline-btn');
+  if(btn){ btn.textContent = 'Project Timeline →'; btn.onclick = window.openTimeline; }
+};
+
+window.setTimelineData = function(p){ _tlData = p; };
+
+function renderTimeline(p){
+  var track = document.getElementById('timeline-track');
+  if(!track) return;
+
+  var defaults = [
+    { label:'Project Approved',          description:'Project formally approved and added to the Analyst Den research pipeline.' },
+    { label:'Field Research Begins',     description:'Field researchers deployed to target locations to begin data collection.' },
+    { label:'Data Collection Complete',  description:'All survey responses collected and raw data secured for cleaning.' },
+    { label:'Analysis Phase',            description:'Data cleaned, validated and analysed using Power BI and Python.' },
+    { label:'Report Published',          description:'Findings published as a public insights report with downloadable PDF.' }
+  ];
+
+  var ms = (p.timeline && p.timeline.length)
+    ? p.timeline
+    : defaults.map(function(m){ return { label: m.label, description: m.description, date: '' }; });
+
+  var today = new Date(); today.setHours(0,0,0,0);
+  var foundCurrent = false;
+
+  var html = ms.map(function(m, i){
+    var hasDate = m.date && m.date.trim();
+    var mDate   = hasDate ? new Date(m.date) : null;
+    var isPast  = mDate && mDate <= today;
+    var state   = isPast ? 'done' : (!foundCurrent ? (foundCurrent=true, 'current') : 'pending');
+
+    var num = ('0'+(i+1)).slice(-2);
+
+    var dateStr = hasDate
+      ? new Date(m.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}).toUpperCase()
+      : (state==='current' ? 'IN PROGRESS' : 'SCHEDULED');
+
+    var dotHtml = state==='done'
+      ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#1F4D3A;color:#fff;font-size:9px;font-weight:900;margin-right:6px">&#10003;</span>'
+      : state==='current'
+        ? '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#B8860B;margin-right:8px;animation:tlAmberPulse 1.8s ease-in-out infinite"></span>'
+        : '';
+
+    var numColor  = state==='done' ? '#1F4D3A' : state==='current' ? '#B8860B' : '#C4BDB0';
+    var dateColor = state==='done' ? '#1F4D3A' : state==='current' ? '#B8860B' : '#B0A99F';
+    var titleColor = state==='pending' ? '#9E9890' : '#111';
+    var descColor  = state==='pending' ? '#B0A99F' : '#3A3832';
+    var cardBg     = state==='current' ? 'background:#fff;border-top:3px solid #B8860B;' : 'background:#EDEBE4;';
+    var desc = m.description || m.desc || '';
+
+    return [
+      '<div style="display:grid;grid-template-columns:56px 1fr;border-bottom:1px solid #D8D2C8;' + cardBg + '">',
+        '<div style="padding:28px 0 28px 24px;font-family:var(--font-data,sans-serif);font-weight:800;font-size:13px;letter-spacing:0.04em;border-right:1px solid #D8D2C8;color:' + numColor + '">' + num + '</div>',
+        '<div style="padding:28px 40px 28px 28px;">',
+          '<div style="font-family:var(--font-data,sans-serif);font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;color:' + dateColor + ';display:flex;align-items:center">' + dotHtml + dateStr + '</div>',
+          '<div style="font-family:var(--font-display,Georgia,serif);font-weight:600;font-size:20px;line-height:1.15;color:' + titleColor + '">' + m.label + '</div>',
+          desc ? '<div style="font-size:14px;line-height:1.72;margin-top:8px;color:' + descColor + (state==='pending'?';font-style:italic':'') + '">' + desc + '</div>' : '',
+        '</div>',
+      '</div>'
+    ].join('');
+  }).join('');
+
+  track.innerHTML = html;
+}
+</script>
+
 </body>
 </html>
