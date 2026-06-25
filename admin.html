@@ -785,6 +785,10 @@ tr:hover td{background:var(--bg)}
       <div class="field-row">
         <div class="field"><label>Email</label><input type="email" id="contrib-email" placeholder="email@example.com"/></div>
         <div class="field"><label>Location</label><input type="text" id="contrib-location" placeholder="e.g. Lagos, Nigeria"/></div>
+              <div class="field-row">
+                <div class="field"><label>LinkedIn URL</label><input type="text" id="contrib-linkedin" placeholder="https://linkedin.com/in/username"/></div>
+                <div class="field"><label>GitHub URL</label><input type="text" id="contrib-github" placeholder="https://github.com/username"/></div>
+              </div>
       </div>
       <div class="field">
         <label>Bio <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;color:var(--text-xs)">(max 150 words)</span></label>
@@ -1487,7 +1491,7 @@ $('search-contribs').oninput = e => {
 
 $('add-contrib-btn').onclick = () => {
   $('contrib-modal-title').textContent = 'Add Contributor';
-  ['contrib-id','contrib-name','contrib-role','contrib-email','contrib-location','contrib-bio','contrib-skills','contrib-avatar','contrib-projects'].forEach(id => $(id).value='');
+  ['contrib-id','contrib-name','contrib-role','contrib-email','contrib-location','contrib-linkedin','contrib-github','contrib-bio','contrib-skills','contrib-avatar','contrib-projects'].forEach(id => $(id).value='');
   showModal('contrib-modal');
   setTimeout(()=>{ initQuillEditors(); setQuill(contribBioEditor,''); }, 120);
 };
@@ -1500,6 +1504,8 @@ window.editContrib = id => {
   $('contrib-role').value     = c.role||'';
   $('contrib-email').value    = c.email||'';
   $('contrib-location').value = c.location||'';
+  if($('contrib-linkedin')) $('contrib-linkedin').value = c.linkedin||'';
+  if($('contrib-github'))   $('contrib-github').value   = c.github||'';
   $('contrib-bio').value      = c.bio||'';
   $('contrib-skills').value   = Array.isArray(c.skills) ? c.skills.join(', ') : '';
   $('contrib-avatar').value   = c.avatar||'';
@@ -1514,6 +1520,8 @@ $('save-contrib-btn').onclick = async () => {
     name, role:$('contrib-role').value.trim(),
     email:$('contrib-email').value.trim(),
     location:$('contrib-location').value.trim(),
+    linkedin:($('contrib-linkedin')?.value||'').trim(),
+    github:  ($('contrib-github')?.value||'').trim(),
     bio:$('contrib-bio').value.trim(),
     skills: $('contrib-skills').value.split(',').map(s=>s.trim()).filter(Boolean),
     avatar:$('contrib-avatar').value.trim(),
