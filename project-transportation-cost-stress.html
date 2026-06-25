@@ -283,7 +283,7 @@
       </div>
       <div class="process-row" style="padding:20px 0">
         <div class="process-num">02</div>
-        <div class="process-content"><h3>Field Collection</h3><p>face-to-face interviews across LGAs, conducted by trained field researchers.</p></div>
+        <div class="process-content"><h3>Field Collection</h3><p>1,240 face-to-face interviews across 12 LGAs, conducted by trained field researchers.</p></div>
       </div>
       <div class="process-row" style="padding:20px 0">
         <div class="process-num">03</div>
@@ -509,13 +509,36 @@ async function loadProject(){
       findSec.style.display = 'block';
     }
 
-    // Downloads
-    const dlLinks = {
-      pdf:          document.querySelector('a[download].pub-card'),
-      dataset:      null,
-      methodology:  null,
-      presentation: null
-    };
+    // Downloads — gray out cards with no uploaded file
+    const pubCards = document.querySelectorAll('.pub-card');
+    const dlFiles = [
+      { card: pubCards[0], url: p.pdf,          label: 'PDF · Report' },
+      { card: pubCards[1], url: p.dataset,       label: 'CSV / Excel' },
+      { card: pubCards[2], url: p.methodology,   label: 'PDF · Methodology' },
+      { card: pubCards[3], url: p.presentation,  label: 'PPTX · Deck' },
+    ];
+    dlFiles.forEach(function(f){
+      if(!f.card) return;
+      const dlBtn = f.card.querySelector('.pub-download');
+      const meta  = f.card.querySelector('.pub-meta');
+      if(f.url){
+        // Has file — make it clickable
+        f.card.style.opacity = '1';
+        f.card.style.cursor  = 'pointer';
+        if(f.card.tagName === 'A') f.card.href = f.url;
+        else { f.card.style.cursor='default'; f.card.onclick = function(){ window.open(f.url,'_blank'); }; }
+        if(meta) meta.textContent = f.label;
+        if(dlBtn){ dlBtn.textContent = '↓ Download'; dlBtn.style.color = 'var(--gold)'; dlBtn.style.cursor = 'pointer'; }
+      } else {
+        // No file — gray out
+        f.card.style.opacity  = '0.45';
+        f.card.style.cursor   = 'default';
+        f.card.removeAttribute('href');
+        f.card.onclick        = null;
+        if(meta) meta.textContent = 'Not yet available';
+        if(dlBtn){ dlBtn.textContent = 'Not Available'; dlBtn.style.color = '#B0A99F'; dlBtn.style.cursor = 'default'; }
+      }
+    });
 
     // Power BI button
     const pbiBtnWrap = document.getElementById('pbi-btn-wrap');
@@ -531,31 +554,7 @@ async function loadProject(){
       }
     }
 
-    // Update download cards
-    const pubCards = document.querySelectorAll('.pub-card');
-    if(pubCards[0] && p.pdf){
-      pubCards[0].href = p.pdf;
-      pubCards[0].style.opacity = '1';
-    }
-    if(pubCards[1] && p.dataset){
-      pubCards[1].href = p.dataset;
-      pubCards[1].style.opacity = '1';
-      pubCards[1].setAttribute('href', p.dataset);
-      const dl = pubCards[1].querySelector('.pub-download');
-      if(dl) dl.textContent = '↓ Download';
-    }
-    if(pubCards[2] && p.methodology){
-      pubCards[2].href = p.methodology;
-      pubCards[2].style.opacity = '1';
-      const dl = pubCards[2].querySelector('.pub-download');
-      if(dl) dl.textContent = '↓ Download';
-    }
-    if(pubCards[3] && p.presentation){
-      pubCards[3].href = p.presentation;
-      pubCards[3].style.opacity = '1';
-      const dl = pubCards[3].querySelector('.pub-download');
-      if(dl) dl.textContent = '↓ Download';
-    }
+    // Downloads handled above
 
     // Load contributors assigned to this project
     if(p.title){
