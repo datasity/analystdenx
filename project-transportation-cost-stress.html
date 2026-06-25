@@ -79,25 +79,16 @@
   margin: 48px 0;
 }
 .pd-hero-imgcard-title {
-  display: flex; align-items: center; gap: 10px;
-  padding: 14px 18px;
-  border-bottom: 1px solid #e8e4de;
-  background: #ffffff;
+  display: none;
 }
-.pd-hero-imgcard-icon {
-  font-size: 18px;
-}
-.pd-hero-imgcard-label {
-  font-family: var(--font-data); font-weight: 700;
-  font-size: 13px; color: #111111;
-  letter-spacing: 0.01em;
-}
+.pd-hero-imgcard-icon { display:none; }
+.pd-hero-imgcard-label { display:none; }
 .pd-hero-imgcard img {
   width: 100%; height: auto;
   display: block;
-  object-fit: contain;
-  object-position: center top;
+  object-fit: cover;
   background: #f5f5f0;
+  margin-top: -52px; /* crop the title bar baked into image */
 }
 
 /* RESPONSIVE */
@@ -259,31 +250,7 @@
   </div>
 </section>
 
-<!-- ══════════════════════════════
-     KEY NUMBERS
-══════════════════════════════ -->
-<section>
-  <div class="container">
-    <div class="data-numbers">
-      <div class="data-number-col">
-        <div class="data-number">1,240</div>
-        <div class="data-number-label">Survey Responses</div>
-      </div>
-      <div class="data-number-col">
-        <div class="data-number">12</div>
-        <div class="data-number-label">LGA Coverage Areas</div>
-      </div>
-      <div class="data-number-col">
-        <div class="data-number">72%</div>
-        <div class="data-number-label">Report High Transport Burden</div>
-      </div>
-      <div class="data-number-col">
-        <div class="data-number">5</div>
-        <div class="data-number-label">Research Contributors</div>
-      </div>
-    </div>
-  </div>
-</section>
+
 
 <!-- ══════════════════════════════
      OVERVIEW + METHODOLOGY
@@ -326,32 +293,15 @@
 </section>
 
 <!-- ══════════════════════════════
-     KEY FINDINGS
+     KEY FINDINGS — only shown when project is completed
 ══════════════════════════════ -->
-<section style="background:var(--bg-alt);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+<section id="findings-section" style="display:none;background:var(--bg-alt);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
   <div class="container">
     <div class="section-eyebrow">
       <span class="eyebrow-text">Key Findings</span>
       <div class="eyebrow-line"></div>
     </div>
-    <div class="project-findings">
-      <div class="finding-col">
-        <div class="finding-num">72%</div>
-        <div class="finding-label">Report increased transport burden</div>
-      </div>
-      <div class="finding-col">
-        <div class="finding-num">58%</div>
-        <div class="finding-label">Changed travel behaviour due to rising costs</div>
-      </div>
-      <div class="finding-col">
-        <div class="finding-num">34%</div>
-        <div class="finding-label">Spend over ₦15,000 monthly on transport</div>
-      </div>
-      <div class="finding-col">
-        <div class="finding-num">61%</div>
-        <div class="finding-label">Use informal transport as primary mode</div>
-      </div>
-    </div>
+    <div class="project-findings" id="findings-grid"></div>
   </div>
 </section>
 
@@ -534,12 +484,27 @@ async function loadProject(){
 
     // Description
     const descEls = document.querySelectorAll('.t-body');
-    if(descEls[0] && p.description) descEls[0].textContent = p.description;
-    if(descEls[1] && p.writeup)     descEls[1].textContent = p.writeup;
+    if(descEls[0] && p.description) descEls[0].innerHTML = p.description;
+    if(descEls[1] && p.writeup)     descEls[1].innerHTML = p.writeup;
 
     // Pull quote
     const quoteEl = document.querySelector('.pull-quote');
     if(quoteEl && p.quote) quoteEl.textContent = `"${p.quote}"`;
+
+    // Key Findings — only show when completed and findings exist
+    const findSec  = document.getElementById('findings-section');
+    const findGrid = document.getElementById('findings-grid');
+    const isCompleted = (p.status||'').toLowerCase() === 'completed';
+    if(isCompleted && Array.isArray(p.findings) && p.findings.length && findSec && findGrid){
+      findGrid.innerHTML = p.findings
+        .filter(f => f.metric)
+        .map(f => `
+          <div class="finding-col">
+            <div class="finding-num">${f.metric}</div>
+            <div class="finding-label">${f.label||''}</div>
+          </div>`).join('');
+      findSec.style.display = 'block';
+    }
 
     // Downloads
     const dlLinks = {
