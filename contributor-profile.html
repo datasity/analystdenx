@@ -13,13 +13,14 @@
 <a href="about.html">About</a>
 <a href="get-involved.html">Get Involved</a></div>
 <div class="page-hero"><div class="container page-hero-inner"><p class="t-label" style="color:rgba(255,255,255,0.45);margin-bottom:14px">Analyst Den</p><h1>Emma Johnson</h1><p>Lead Data Scientist · Manchester, UK</p></div></div>
-<section><div class="container"><div class="cd-layout"><div class="cd-sidebar"><div class="cd-avatar"><img src="assets/avatars/contr-1.png" alt="Emma Johnson"/></div><h1 class="cd-name">Emma Johnson</h1><p class="cd-role">Data Scientist · Lead Analyst</p><p class="cd-location">📍 Manchester, UK</p><p class="cd-bio">Experienced data scientist passionate about machine learning, predictive analytics, and turning complex datasets into insights that drive real-world decisions. Contributor to 3 Analyst Den research projects.</p><div class="cd-tags"><span class="cd-tag">Power BI</span><span class="cd-tag">Python</span><span class="cd-tag">SQL</span><span class="cd-tag">Field Research</span></div><div style="display:flex;gap:10px"><a href="get-involved.html" class="btn btn--primary" style="font-size:11px;padding:10px 18px">Contact</a><a href="get-involved.html" class="btn btn--outline" style="font-size:11px;padding:10px 18px">Collaborate</a></div></div><div><div class="section-eyebrow"><span class="eyebrow-text">Research Contributions</span><div class="eyebrow-line"></div></div><div class="cd-project-item"><img src="assets/trans.png" alt=""/><div><h3>Transportation Cost Stress</h3><p class="t-body-sm">Lead analyst. Survey design, data cleaning, Power BI dashboard build.</p><p class="t-label" style="margin-top:4px">March 2026 · Ogun State</p></div></div><div class="cd-project-item"><img src="assets/mark.png" alt=""/><div><h3>Market Environmental Conditions</h3><p class="t-body-sm">Data engineer. Field data pipeline, validation and analysis.</p><p class="t-label" style="margin-top:4px">June 2026 · Ogun State</p></div></div><div class="cd-project-item"><img src="assets/buss.png" alt=""/><div><h3>SME Business Cashflow Stress</h3><p class="t-body-sm">Insight writer. Final report narrative and statistical summary.</p><p class="t-label" style="margin-top:4px">Sept 2026 · Ogun State</p></div></div></div></div></div></section>
+<section><div class="container"><div class="cd-layout"><div class="cd-sidebar"><div class="cd-avatar"><img src="assets/avatars/contr-1.png" alt="Emma Johnson"/></div><h1 class="cd-name">Emma Johnson</h1><p class="cd-role">Data Scientist · Lead Analyst</p><p class="cd-location">📍 Manchester, UK</p><p class="cd-bio">Experienced data scientist passionate about machine learning, predictive analytics, and turning complex datasets into insights that drive real-world decisions. Contributor to 3 Analyst Den research projects.</p><div class="cd-tags"><span class="cd-tag">Power BI</span><span class="cd-tag">Python</span><span class="cd-tag">SQL</span><span class="cd-tag">Field Research</span></div><div id="cd-social" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px"></div>
+<div style="display:flex;gap:10px"><a href="contact.html" class="btn btn--primary" style="font-size:11px;padding:10px 18px">Contact Me</a></div></div><div><div class="section-eyebrow"><span class="eyebrow-text">Research Contributions</span><div class="eyebrow-line"></div></div><div id="cd-projects-list"><p style="color:var(--text-lt);font-size:13px">Loading projects…</p></div></div></div></div></section>
 <footer class="site-footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><span class="footer-logo">Analyst Den</span><p>A Datavasity platform.</p></div><div class="footer-col"><p class="footer-col-title">Research</p><a href="research.html">Projects</a><a href="publications.html">Publications</a></div><div class="footer-col"><p class="footer-col-title">Community</p><a href="contributors.html">Contributors</a><a href="get-involved.html">Get Involved</a></div><div class="footer-col"><p class="footer-col-title">About</p><a href="about.html">About Us</a><a href="contact.html">Contact</a></div></div><div class="footer-bottom"><span>© 2026 Analyst Den by Datavasity</span><span>hello@analystden.org</span></div></div></footer>
 <script src="script.js"></script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyBzlCB74rpbd6o2vx7RbsfuIrkfOyhBUTQ",
@@ -67,6 +68,78 @@ async function loadProfile(){
 
     // Update page title
     document.title = `${c.name||'Contributor'} — Analyst Den`;
+
+    // Update hero subtitle
+    document.querySelectorAll('.page-hero-inner p').forEach(el => {
+      if(el.textContent.includes('Lead Data Scientist') || el.textContent.includes('Manchester'))
+        el.textContent = (c.role||'') + (c.location ? ' · ' + c.location : '');
+    });
+    document.querySelectorAll('.page-hero-inner h1').forEach(el => {
+      if(el.textContent.includes('Emma')) el.textContent = c.name||'';
+    });
+
+    // Bio — render HTML from Quill if saved as HTML
+    if(bioEl){
+      const tmp = document.createElement('div'); tmp.innerHTML = c.bio||'';
+      const bioText = tmp.textContent || tmp.innerText || c.bio || '';
+      bioEl.textContent = bioText;
+    }
+
+    // Social links — LinkedIn + GitHub
+    const socialEl = document.getElementById('cd-social');
+    if(socialEl){
+      const links = [];
+      if(c.linkedin) links.push(`<a href="${c.linkedin}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;font-family:var(--font-data);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink);text-decoration:none;padding:8px 14px;border:1.5px solid var(--border);transition:all 0.2s" onmouseover="this.style.borderColor='#0A66C2';this.style.color='#0A66C2'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--ink)'"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn</a>`);
+      if(c.github) links.push(`<a href="${c.github}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;font-family:var(--font-data);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink);text-decoration:none;padding:8px 14px;border:1.5px solid var(--border);transition:all 0.2s" onmouseover="this.style.borderColor='#111';this.style.color='#111';this.style.background='#f6f8fa'" onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent'"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.929.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg> GitHub</a>`);
+      socialEl.innerHTML = links.join('');
+    }
+
+    // Load assigned projects from Firestore
+    const projectsList = document.getElementById('cd-projects-list');
+    if(projectsList && Array.isArray(c.projects) && c.projects.length){
+      try {
+        const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        const projSnap = await getDocs(collection(db,'projects'));
+        const allProjects = projSnap.docs.map(d=>({id:d.id,...d.data()}));
+
+        // Match contributor's project names to actual project records
+        const matched = allProjects.filter(p =>
+          c.projects.some(cp => {
+            const pt = (p.title||'').toLowerCase();
+            const ct = (cp||'').toLowerCase();
+            return pt === ct || pt.includes(ct.substring(0,8)) || ct.includes(pt.substring(0,8));
+          })
+        );
+
+        if(matched.length){
+          projectsList.innerHTML = matched.map(p => {
+            const tmp = document.createElement('div'); tmp.innerHTML = p.description||'';
+            const desc = (tmp.textContent||'').trim().substring(0,120);
+            return `<a href="project-transportation-cost-stress.html?id=${p.id}" style="text-decoration:none;display:flex;align-items:flex-start;gap:16px;padding:16px 0;border-bottom:1px solid var(--border)">
+              ${p.image ? `<img src="${p.image}" alt="${p.title||''}" style="width:72px;height:54px;object-fit:cover;border:1px solid var(--border);flex-shrink:0"/>` : '<div style="width:72px;height:54px;background:var(--bg-alt);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px">🗂️</div>'}
+              <div>
+                <h3 style="font-family:var(--font-display);font-weight:600;font-size:17px;color:var(--ink);margin-bottom:4px;transition:color 0.2s">${p.title||'—'}</h3>
+                ${desc ? `<p class="t-body-sm" style="margin-bottom:4px">${desc}${desc.length===120?'…':''}</p>` : ''}
+                <p class="t-label" style="margin-top:4px">${p.period||''} ${p.location?'· '+p.location:''}</p>
+              </div>
+            </a>`;
+          }).join('');
+        } else {
+          // Show project names even if no full records found
+          projectsList.innerHTML = c.projects.map(name =>
+            `<div style="padding:14px 0;border-bottom:1px solid var(--border)">
+              <h3 style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--ink)">${name}</h3>
+            </div>`
+          ).join('');
+        }
+      } catch(e){
+        projectsList.innerHTML = c.projects.map(name =>
+          `<div style="padding:14px 0;border-bottom:1px solid var(--border)"><h3 style="font-family:var(--font-display);font-size:16px;font-weight:600;color:var(--ink)">${name}</h3></div>`
+        ).join('');
+      }
+    } else {
+      projectsList.innerHTML = '<p style="color:var(--text-lt);font-size:13px;padding:16px 0">No projects assigned yet.</p>';
+    }
 
   } catch(e){ console.error('Profile load error:', e); }
 }
