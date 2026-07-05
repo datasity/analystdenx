@@ -78,6 +78,14 @@
   box-shadow: 0 8px 40px rgba(0,0,0,0.5);
   margin: 48px 0;
 }
+/* Mobile padding fix */
+.container { box-sizing: border-box; }
+@media(max-width:480px){
+  section .container { padding-left:16px; padding-right:16px; }
+  .process-row { gap: 12px; }
+  .process-num { font-size: 28px; min-width: 36px; }
+  .section-eyebrow { margin-bottom: 16px; }
+}
 .pd-hero-imgcard-title {
   display: flex; align-items: center; gap: 10px;
   padding: 14px 18px;
@@ -101,21 +109,44 @@
 }
 
 /* RESPONSIVE */
+/* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   .pd-hero-inner {
     grid-template-columns: 1fr;
     gap: 0;
-    padding: 0 24px;
+    padding: 0 20px;
+    min-height: auto;
   }
   .pd-hero-imgcard {
-    margin: 0 0 40px;
-    max-width: 480px;
+    margin: 0 0 0;
+    max-width: 100%;
+    border-radius: 8px;
+    order: -1; /* image first on mobile */
   }
-  .pd-hero-text { padding: 48px 0 32px }
+  .pd-hero-text { padding: 28px 0 24px; }
+  .pd-hero-chips { gap: 6px; }
+  .pd-chip { font-size: 10px; padding: 5px 10px; }
 }
-@media (max-width: 540px) {
-  .pd-hero-text { padding: 36px 0 24px }
-  .pd-hero-text h1 { font-size: clamp(28px, 8vw, 40px) }
+@media (max-width: 600px) {
+  .pd-hero-text h1 { font-size: clamp(24px, 7vw, 36px); }
+  .pd-hero-actions { flex-direction: column; }
+  .pd-hero-actions .btn { width: 100%; text-align: center; }
+  /* Overview + methodology stack */
+  .content-two-col { grid-template-columns: 1fr !important; gap: 32px; }
+  /* Downloads 2-col on mobile */
+  .pub-card { padding: 16px; }
+  /* Team grid — 2 col on mobile */
+  #contributors-strip[style] {
+    grid-template-columns: repeat(2,1fr) !important;
+  }
+  /* Timeline */
+  #timeline-track > div {
+    grid-template-columns: 40px 1fr !important;
+  }
+}
+@media (max-width: 380px) {
+  .pd-hero-text h1 { font-size: 22px; }
+  .container { padding: 0 16px; }
 }
 </style>
 
@@ -353,7 +384,7 @@
       <span class="eyebrow-text">Downloads</span>
       <div class="eyebrow-line"></div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border:1px solid var(--border)">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0;border:1px solid var(--border)">
       <a href="assets/report.pdf" class="pub-card" download style="text-decoration:none">
         <span class="pub-tag">PDF Report</span>
         <p class="pub-title">Full Research Report</p>
@@ -568,7 +599,7 @@ async function loadProject(){
         const strip = document.querySelector('.contributors-strip');
         if(strip){
           // Override strip styles for 4-col grid
-          strip.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#D8D2C8;border:1px solid #D8D2C8;';
+          strip.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:1px;background:#D8D2C8;border:1px solid #D8D2C8;';
 
           const SHOW = 4;
           let showAll = false;
