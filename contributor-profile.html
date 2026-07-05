@@ -83,7 +83,30 @@
       <p class="cd-bio" id="cd-bio"></p>
       <div class="cd-tags" id="cd-tags"></div>
       <div id="cd-social" style="margin-bottom:12px"></div>
-      <a href="contact.html" class="cd-contact-btn">Contact Me</a>
+      <!-- Contact Me — anti-bot email reveal -->
+      <div id="cd-contact-wrap">
+        <button onclick="window.showContactCaptcha()" class="cd-contact-btn" style="width:100%;cursor:pointer;border:none">Contact Me</button>
+      </div>
+
+      <!-- Captcha modal -->
+      <div id="cd-captcha-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:999;align-items:center;justify-content:center">
+        <div style="background:#fff;width:90%;max-width:380px;padding:32px;border-top:3px solid var(--gold)">
+          <div style="font-family:var(--font-data);font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-lt);margin-bottom:8px">Verify you're human</div>
+          <div style="font-family:var(--font-display);font-size:22px;font-weight:600;color:var(--ink);margin-bottom:16px" id="cd-math-q">—</div>
+          <input type="number" id="cd-math-ans" placeholder="Your answer…" style="width:100%;padding:11px 13px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:16px;color:var(--ink);background:var(--bg);outline:none;box-sizing:border-box;margin-bottom:10px"/>
+          <p id="cd-captcha-err" style="color:#C0392B;font-size:12px;margin-bottom:10px;display:none">Incorrect — try again</p>
+          <div style="display:flex;gap:10px">
+            <button onclick="window.checkCaptcha()" style="flex:1;padding:12px;background:var(--forest);color:#fff;border:none;font-family:var(--font-data);font-weight:700;font-size:12px;letter-spacing:0.10em;text-transform:uppercase;cursor:pointer">Reveal Email</button>
+            <button onclick="document.getElementById('cd-captcha-modal').style.display='none'" style="padding:12px 16px;background:none;border:1.5px solid var(--border);font-family:var(--font-data);font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;color:var(--text-lt)">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email reveal -->
+      <div id="cd-email-reveal" style="display:none;margin-top:8px;padding:14px;background:var(--bg-alt);border:1px solid var(--border)">
+        <div style="font-family:var(--font-data);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-lt);margin-bottom:6px">Email</div>
+        <a id="cd-email-link" href="#" style="font-family:var(--font-data);font-size:14px;font-weight:700;color:var(--gold);text-decoration:none;word-break:break-all"></a>
+      </div>
     </div>
 
     <!-- MAIN -->
@@ -149,6 +172,8 @@ async function loadProfile(){
 
     // Name + role
     document.getElementById('cd-name').textContent = c.name||'—';
+    _cdEmail = c.email||'';
+    if(!c.email){ var btn = document.querySelector('#cd-contact-wrap button'); if(btn){ btn.style.opacity='0.4'; btn.style.cursor='default'; btn.onclick=null; btn.title='No email on file'; } }
     document.getElementById('cd-role').textContent = c.role||'';
 
     // Location
@@ -235,6 +260,52 @@ async function loadProfile(){
 }
 
 loadProfile();
+
+/* ── CONTACT ME — anti-bot email reveal ── */
+var _cdEmail = '';
+var _cdMathAnswer = 0;
+
+window.showContactCaptcha = function(){
+  if(!_cdEmail){ return; } // email not loaded yet
+  // Generate simple math question
+  var a = Math.floor(Math.random()*9)+1;
+  var b = Math.floor(Math.random()*9)+1;
+  _cdMathAnswer = a + b;
+  document.getElementById('cd-math-q').textContent = 'What is ' + a + ' + ' + b + '?';
+  document.getElementById('cd-math-ans').value = '';
+  document.getElementById('cd-captcha-err').style.display = 'none';
+  document.getElementById('cd-captcha-modal').style.display = 'flex';
+  setTimeout(function(){ document.getElementById('cd-math-ans').focus(); }, 100);
+};
+
+window.checkCaptcha = function(){
+  var ans = parseInt(document.getElementById('cd-math-ans').value, 10);
+  if(ans === _cdMathAnswer){
+    document.getElementById('cd-captcha-modal').style.display = 'none';
+    var emailLink = document.getElementById('cd-email-link');
+    var emailReveal = document.getElementById('cd-email-reveal');
+    if(emailLink && emailReveal){
+      emailLink.textContent = _cdEmail;
+      emailLink.href = 'mailto:' + _cdEmail;
+      emailReveal.style.display = 'block';
+    }
+    // Change button to show email is revealed
+    var btn = document.querySelector('#cd-contact-wrap button');
+    if(btn){ btn.textContent = 'Email Revealed ↓'; btn.style.background = 'var(--gold)'; btn.onclick = null; }
+  } else {
+    document.getElementById('cd-captcha-err').style.display = 'block';
+    document.getElementById('cd-math-ans').value = '';
+    document.getElementById('cd-math-ans').focus();
+  }
+};
+
+// Allow Enter key to submit
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Enter' && document.getElementById('cd-captcha-modal').style.display === 'flex'){
+    window.checkCaptcha();
+  }
+});
+
 </script>
 </body>
 </html>
