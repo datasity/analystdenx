@@ -654,6 +654,22 @@ async function loadProject(){
     if(chips[1]) chips[1].textContent = p.period||'';
     if(chips[2]) chips[2].textContent = 'Field Research';
 
+    // Status tag — update from Firestore instead of hardcoded "Active"
+    const statusTag = document.querySelector('.tag.tag--active, .tag.tag--completed, .tag.tag--planned, .tag.tag--ongoing');
+    if(statusTag && p.status){
+      const statusMap = {
+        active:    ['tag--active',    'Active'],
+        ongoing:   ['tag--active',    'Ongoing'],
+        completed: ['tag--completed', 'Completed'],
+        published: ['tag--completed', 'Published'],
+        planned:   ['tag--planned',   'Planned']
+      };
+      const [cls, label] = statusMap[(p.status||'').toLowerCase()] || ['tag--active', p.status];
+      statusTag.className = 'tag ' + cls;
+      statusTag.style.cssText = 'font-size:10px;letter-spacing:0.08em';
+      statusTag.textContent = label;
+    }
+
     // Image
     if(p.image){
       const imgEl = document.querySelector('.pd-hero-imgcard img');
