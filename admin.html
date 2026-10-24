@@ -643,6 +643,30 @@ tr:hover td{background:var(--bg)}
           <p style="font-size:11px;color:var(--text-xs);margin-top:10px">Left column: metric (e.g. 72%) · Right column: what it means</p>
         </div>
 
+        <!-- METHODOLOGY STEPS -->
+        <div style="border-top:1px solid var(--border);padding-top:18px;margin-top:6px">
+          <p style="font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:var(--gold);margin-bottom:4px">Methodology Steps</p>
+          <p style="font-size:12px;color:var(--text-xs);margin-bottom:14px">Steps 01–04 shown on the project page. Left = step title · Right = short description.</p>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:grid;grid-template-columns:200px 1fr;gap:10px;align-items:start">
+              <input type="text" id="mstep-1-title" placeholder="e.g. Survey Design" style="padding:9px 12px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none"/>
+              <input type="text" id="mstep-1-desc" placeholder="Short description…" style="padding:9px 12px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none"/>
+            </div>
+            <div style="display:grid;grid-template-columns:200px 1fr;gap:10px;align-items:start">
+              <input type="text" id="mstep-2-title" placeholder="e.g. Field Collection" style="padding:9px 12px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none"/>
+              <input type="text" id="mstep-2-desc" placeholder="Short description…" style="padding:9px 12px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none"/>
+            </div>
+            <div style="display:grid;grid-template-columns:200px 1fr;gap:10px;align-items:start">
+              <input type="text" id="mstep-3-title" placeholder="e.g. Data Cleaning & Analysis" style="padding:9px 12px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none"/>
+              <input type="text" id="mstep-3-desc" placeholder="Short description…" style="padding:9px 12px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none"/>
+            </div>
+            <div style="display:grid;grid-template-columns:200px 1fr;gap:10px;align-items:start">
+              <input type="text" id="mstep-4-title" placeholder="e.g. Reporting" style="padding:9px 12px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none"/>
+              <input type="text" id="mstep-4-desc" placeholder="Short description…" style="padding:9px 12px;border:1.5px solid var(--border);font-family:var(--font-data);font-size:13px;color:var(--text);background:var(--bg);outline:none"/>
+            </div>
+          </div>
+        </div>
+
         <div class="field">
           <label>Methodology (PDF)</label>
           <div class="upload-wrap">
@@ -1260,6 +1284,7 @@ $('add-project-btn').onclick = () => {
   ['tl-approved-count','tl-fieldstart-count','tl-datacomplete-count','tl-analysis-count','tl-published-count'].forEach(id => { const el=$(id); if(el) el.textContent='0'; }); ['proj-pdf-prog','proj-dataset-prog','proj-method-prog','proj-pptx-prog'].forEach(id => { const el=$(id); if(el) el.textContent=''; });
   $('proj-responses').value=''; $('proj-category').value=''; $('proj-status').value='ongoing';
   if($('proj-sponsor-search')) $('proj-sponsor-search').value='';
+  [1,2,3,4].forEach(i=>{ const t=$('mstep-'+i+'-title'); const d=$('mstep-'+i+'-desc'); if(t)t.value=''; if(d)d.value=''; });
   showModal('project-modal');
   setTimeout(()=>{
     initQuillEditors();
@@ -1290,6 +1315,13 @@ window.editProject = id => {
   $('proj-dataset').value    = p.dataset||'';
   $('proj-methodology').value= p.methodology||'';
   $('proj-presentation').value= p.presentation||'';
+  // Pre-fill methodology steps
+  if(Array.isArray(p.methodologySteps)){
+    p.methodologySteps.forEach((s,i)=>{
+      const t=$('mstep-'+(i+1)+'-title'); const d=$('mstep-'+(i+1)+'-desc');
+      if(t) t.value=s.title||''; if(d) d.value=s.desc||'';
+    });
+  }
   $('proj-pdf').value        = p.pdf||'';
 
   // Pre-fill findings
@@ -1367,6 +1399,10 @@ $('save-project-btn').onclick = async () => {
     dataset:$('proj-dataset').value.trim(),
     methodology:$('proj-methodology').value.trim(),
     presentation:$('proj-presentation').value.trim(),
+    methodologySteps: [1,2,3,4].map(i => ({
+      title: ($('mstep-'+i+'-title')?.value||'').trim(),
+      desc:  ($('mstep-'+i+'-desc')?.value||'').trim()
+    })).filter(s => s.title),
     updatedAt: serverTimestamp()
   };
   const id = $('project-id').value;
