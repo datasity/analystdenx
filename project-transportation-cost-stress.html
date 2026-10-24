@@ -314,21 +314,21 @@
         <span class="eyebrow-text">Methodology</span>
         <div class="eyebrow-line"></div>
       </div>
-      <div class="process-row" style="padding:20px 0">
+      <div class="process-row" style="padding:20px 0" id="mstep-row-1">
         <div class="process-num">01</div>
-        <div class="process-content"><h3>Survey Design</h3><p>Structured questionnaires developed across transport, income, and mobility dimensions.</p></div>
+        <div class="process-content"><h3 id="mstep-title-1">Survey Design</h3><p id="mstep-desc-1">Structured questionnaires developed across transport, income, and mobility dimensions.</p></div>
       </div>
-      <div class="process-row" style="padding:20px 0">
+      <div class="process-row" style="padding:20px 0" id="mstep-row-2">
         <div class="process-num">02</div>
-        <div class="process-content"><h3>Field Collection</h3><p>1,240 face-to-face interviews across 12 LGAs, conducted by trained field researchers.</p></div>
+        <div class="process-content"><h3 id="mstep-title-2">Field Collection</h3><p id="mstep-desc-2">1,240 face-to-face interviews across 12 LGAs, conducted by trained field researchers.</p></div>
       </div>
-      <div class="process-row" style="padding:20px 0">
+      <div class="process-row" style="padding:20px 0" id="mstep-row-3">
         <div class="process-num">03</div>
-        <div class="process-content"><h3>Data Cleaning & Analysis</h3><p>Validated and cleaned dataset analysed using Power BI and Python.</p></div>
+        <div class="process-content"><h3 id="mstep-title-3">Data Cleaning & Analysis</h3><p id="mstep-desc-3">Validated and cleaned dataset analysed using Power BI and Python.</p></div>
       </div>
-      <div class="process-row" style="padding:20px 0;border-bottom:none">
+      <div class="process-row" style="padding:20px 0;border-bottom:none" id="mstep-row-4">
         <div class="process-num">04</div>
-        <div class="process-content"><h3>Reporting</h3><p>Findings published as a public insights report and downloadable PDF.</p></div>
+        <div class="process-content"><h3 id="mstep-title-4">Reporting</h3><p id="mstep-desc-4">Findings published as a public insights report and downloadable PDF.</p></div>
       </div>
     </div>
   </div>
@@ -718,6 +718,18 @@ async function loadProject(){
         if(dlBtn){ dlBtn.textContent = 'Not Available'; dlBtn.style.color = '#B0A99F'; dlBtn.style.cursor = 'default'; }
       }
     });
+
+    // Methodology steps
+    if(Array.isArray(p.methodologySteps) && p.methodologySteps.length){
+      p.methodologySteps.forEach((s,i)=>{
+        const row   = document.getElementById('mstep-row-'+(i+1));
+        const title = document.getElementById('mstep-title-'+(i+1));
+        const desc  = document.getElementById('mstep-desc-'+(i+1));
+        if(s.title && title) title.textContent = s.title;
+        if(s.desc  && desc)  desc.textContent  = s.desc;
+        if(row && !s.title)  row.style.display = 'none';
+      });
+    }
 
     // Power BI expandable dashboard
     const pbiSection = document.getElementById('pbi-inline-section');
