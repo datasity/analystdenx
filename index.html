@@ -323,50 +323,8 @@
       <a href="research.html" class="btn-arrow" style="white-space:nowrap">View All</a>
     </div>
 
-    <div class="home-cards-grid">
-
-      <div class="home-card">
-        <span class="home-card-num">01</span>
-        <div class="home-card-meta">
-          <span class="tag tag--active">Active</span>
-          <span class="t-label">Transportation</span>
-        </div>
-        <h3 class="home-card-title">Transportation Cost Stress</h3>
-        <p class="home-card-desc">Documenting how rising transport costs affect mobility, income, and daily life for households in Ogun State.</p>
-        <div class="home-card-footer">
-          <span class="home-card-stat">1,240 responses · Ogun State</span>
-          <a href="project-transportation-cost-stress.html" class="btn-arrow">View</a>
-        </div>
-      </div>
-
-      <div class="home-card">
-        <span class="home-card-num">02</span>
-        <div class="home-card-meta">
-          <span class="tag tag--active">Active</span>
-          <span class="t-label">Environment</span>
-        </div>
-        <h3 class="home-card-title">Market Environmental Conditions</h3>
-        <p class="home-card-desc">Assessing sanitation and environmental factors in urban markets and their impact on trade and public health.</p>
-        <div class="home-card-footer">
-          <span class="home-card-stat">980 responses · Ogun State</span>
-          <a href="project-transportation-cost-stress.html" class="btn-arrow">View</a>
-        </div>
-      </div>
-
-      <div class="home-card">
-        <span class="home-card-num">03</span>
-        <div class="home-card-meta">
-          <span class="tag tag--active">Active</span>
-          <span class="t-label">Economy</span>
-        </div>
-        <h3 class="home-card-title">SME Business Cashflow Stress</h3>
-        <p class="home-card-desc">Examining financial pressure and cashflow challenges among small businesses across Ogun State markets.</p>
-        <div class="home-card-footer">
-          <span class="home-card-stat">1,105 responses · Ogun State</span>
-          <a href="project-transportation-cost-stress.html" class="btn-arrow">View</a>
-        </div>
-      </div>
-
+    <div class="home-cards-grid" id="home-projects-grid">
+      <div class="home-card" style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-lt);font-family:var(--font-data);letter-spacing:0.06em;font-size:12px">Loading projects…</div>
     </div>
 
     <div style="text-align:center;margin-top:36px">
@@ -511,7 +469,7 @@ function statusTag(status){
 
 /* ── LOAD PROJECTS onto homepage ── */
 async function loadHomeProjects(){
-  const grid = document.querySelector('.home-cards-grid');
+  const grid = document.getElementById('home-projects-grid');
   if(!grid) return;
   try {
     const snap = await getDocs(collection(db,'projects'));
@@ -520,7 +478,10 @@ async function loadHomeProjects(){
       .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0))
       .slice(0,3);
 
-    if(!projects.length) return; // keep hardcoded if no Firebase data yet
+    if(!projects.length){
+      grid.innerHTML = '<div class="home-card" style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-lt);font-family:var(--font-data);letter-spacing:0.06em;font-size:12px">No active projects yet</div>';
+      return;
+    }
 
     grid.innerHTML = projects.map((p,i) => `
       <div class="home-card">
