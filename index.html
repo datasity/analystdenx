@@ -302,11 +302,11 @@
     </div>
     <div class="hero-right-stat">
       <div class="hero-right-stat-num" id="stat-lga">—</div>
-      <div class="hero-right-stat-label">LGA Coverage Areas</div>
+      <div class="hero-right-stat-label">Completed Projects</div>
     </div>
     <div class="hero-right-stat">
       <div class="hero-right-stat-num" id="stat-burden">—</div>
-      <div class="hero-right-stat-label">Report High Transport Burden</div>
+      <div class="hero-right-stat-label">Contributors</div>
     </div>
 
     <a href="research.html" class="hero-right-cta">View All Research</a>
@@ -587,58 +587,42 @@ function countUp(el, target, suffix, duration){
 /* ── LOAD STATS from Firestore ── */
 async function loadHomeStats(){
   try {
-    const snap = await getDocs(collection(db,'projects'));
-    const projects = snap.docs.map(d=>({id:d.id,...d.data()}));
+    const [projectsSnap, contribsSnap] = await Promise.all([
+      getDocs(collection(db,'projects')),
+      getDocs(collection(db,'contributors'))
+    ]);
 
-    const active = projects.filter(p => p.status === 'active' || p.status === 'ongoing');
-    const totalResponses = active.reduce((sum, p) => sum + (parseInt(p.responses)||0), 0);
+    const projects = projectsSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const active    = projects.filter(p => p.status==='active' || p.status==='ongoing');
+    const completed = projects.filter(p => p.status==='completed' || p.status==='published');
+    const totalResponses = projects.reduce((sum,p) => sum + (parseInt(p.responses)||0), 0);
+    const contributors = contribsSnap.size;
 
-    // LGA coverage — count unique LGAs across all active projects
-    const lgaSet = new Set();
-    active.forEach(p => {
-      if(Array.isArray(p.lgas)) p.lgas.forEach(l => lgaSet.add(l));
-      else if(p.lga) lgaSet.add(p.lga);
-    });
-    const lgaCount = lgaSet.size || active.length * 4; // fallback estimate
-
-    // Burden % — pull from siteStats doc if exists, else use project field
-    let burdenPct = null;
-    try {
-      const { getDoc, doc: fsDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-      const statsDoc = await getDoc(fsDoc(db,'siteStats','homepage'));
-      if(statsDoc.exists()) burdenPct = statsDoc.data().burdenPct;
-    } catch(_){}
-    if(!burdenPct){
-      // fall back to first active project's burdenPct field if set
-      const p = active.find(p => p.burdenPct);
-      burdenPct = p ? p.burdenPct : null;
-    }
-
-    // Animate in with Intersection Observer so it fires when visible
-    const panel = document.querySelector('.hero-right');
     const animate = () => {
-      countUp(document.getElementById('stat-active-projects'), active.length, '', 1200);
-      countUp(document.getElementById('stat-responses'), totalResponses || active.length, '', 1800);
-      countUp(document.getElementById('stat-lga'), lgaCount, '', 1500);
-      if(burdenPct){
-        countUp(document.getElementById('stat-burden'), parseFloat(burdenPct), '%', 1600);
-      } else {
-        const el = document.getElementById('stat-burden');
-        if(el) el.textContent = '—';
-      }
+      countUp(document.getElementById('stat-active-projects'), active.length,    '', 1200);
+      countUp(document.getElementById('stat-responses'),       totalResponses,    '', 1800);
+      countUp(document.getElementById('stat-lga'),             completed.length,  '', 1500);
+      countUp(document.getElementById('stat-burden'),          contributors,      '', 1600);
     };
 
+    // Update labels to match new meaning
+    const labels = document.querySelectorAll('.hero-right-stat-label');
+    if(labels[0]) labels[0].textContent = 'Active Field Projects';
+    if(labels[1]) labels[1].textContent = 'Survey Responses Collected';
+    if(labels[2]) labels[2].textContent = 'Completed Projects';
+    if(labels[3]) labels[3].textContent = 'Contributors';
+
+    const panel = document.querySelector('.hero-right');
     if('IntersectionObserver' in window && panel){
       const obs = new IntersectionObserver(entries => {
         if(entries[0].isIntersecting){ animate(); obs.disconnect(); }
-      }, { threshold: 0.3 });
+      }, { threshold: 0.2 });
       obs.observe(panel);
     } else {
       animate();
     }
   } catch(e){
     console.error('Stats load error:', e);
-    // Graceful fallback — keep dashes
   }
 }
 
