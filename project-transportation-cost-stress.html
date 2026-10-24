@@ -268,7 +268,6 @@
         <a href="get-involved.html" class="btn" style="background:transparent;color:#ffffff;border:1.5px solid rgba(255,255,255,0.7);font-family:var(--font-data);font-weight:700;font-size:12px;letter-spacing:0.10em;text-transform:uppercase;padding:13px 28px;">Become a Contributor</a>
         <button id="timeline-btn" onclick="window.openTimeline()" class="btn btn--primary">Project Timeline →</button>
       </div>
-      <div id="pbi-btn-wrap" style="margin-top:12px"></div>
       <p class="pd-hero-countdown">
         Next update in <span id="countdown-timer">Loading…</span>
       </p>
@@ -349,23 +348,162 @@
 </section>
 
 <!-- ══════════════════════════════
-     POWER BI INLINE DASHBOARD
+     POWER BI EXPANDABLE DASHBOARD
 ══════════════════════════════ -->
-<section id="pbi-inline-section" style="display:none;background:var(--ink);border-top:3px solid var(--gold)">
-  <div class="container" style="padding-top:48px;padding-bottom:48px">
-    <div class="section-eyebrow">
-      <span class="eyebrow-text" style="color:rgba(255,255,255,0.5)">Interactive Dashboard</span>
-      <div class="eyebrow-line" style="background:rgba(255,255,255,0.15)"></div>
+<section id="pbi-inline-section" style="display:none">
+<style>
+.pbi-expand-bar {
+  background: var(--ink);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 0;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+.pbi-expand-bar:hover { background: #1a1a1a }
+.pbi-expand-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 40px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.pbi-expand-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.pbi-expand-label {
+  font-family: var(--font-data);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+}
+.pbi-expand-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+.pbi-plus-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--gold);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.25s, transform 0.4s cubic-bezier(.4,0,.2,1);
+  cursor: pointer;
+}
+.pbi-plus-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--gold);
+  stroke-width: 2;
+  fill: none;
+  transition: transform 0.4s cubic-bezier(.4,0,.2,1);
+}
+.pbi-expand-bar:hover .pbi-plus-btn {
+  background: rgba(184,134,11,0.12);
+}
+.pbi-expand-bar.open .pbi-plus-btn {
+  background: var(--gold);
+}
+.pbi-expand-bar.open .pbi-plus-btn svg {
+  stroke: #000;
+  transform: rotate(45deg);
+}
+.pbi-collapse-wrap {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.6s cubic-bezier(.4,0,.2,1);
+  background: #0a0a0a;
+}
+.pbi-collapse-wrap.open {
+  max-height: 700px;
+}
+.pbi-iframe-inner {
+  padding: 0 40px 40px;
+  max-width: var(--max-w);
+  margin: 0 auto;
+}
+.pbi-iframe-ratio {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  border: 1px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+.pbi-iframe-ratio iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none;
+  display: block;
+}
+@media(max-width:600px){
+  .pbi-expand-inner { padding: 0 20px }
+  .pbi-expand-title { font-size: 15px }
+  .pbi-iframe-inner { padding: 0 16px 24px }
+  .pbi-collapse-wrap.open { max-height: 280px }
+}
+</style>
+
+<div class="pbi-expand-bar" id="pbi-expand-bar" onclick="togglePBI()" role="button" aria-expanded="false">
+  <div class="pbi-expand-inner">
+    <div class="pbi-expand-left">
+      <div>
+        <div class="pbi-expand-label">Interactive</div>
+        <div class="pbi-expand-title">Research Dashboard</div>
+      </div>
     </div>
-    <div style="position:relative;width:100%;padding-bottom:56.25%;height:0;border:1px solid rgba(255,255,255,0.12);border-radius:2px;overflow:hidden;margin-top:24px">
-      <iframe id="pbi-inline-iframe"
-        src=""
-        allowfullscreen
-        style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;display:block">
-      </iframe>
+    <button class="pbi-plus-btn" aria-label="Expand dashboard" tabindex="-1">
+      <svg viewBox="0 0 18 18"><line x1="9" y1="2" x2="9" y2="16"/><line x1="2" y1="9" x2="16" y2="9"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="pbi-collapse-wrap" id="pbi-collapse">
+  <div class="pbi-iframe-inner">
+    <div class="pbi-iframe-ratio">
+      <iframe id="pbi-inline-iframe" src="" allowfullscreen></iframe>
     </div>
   </div>
+</div>
+
 </section>
+
+<script>
+window.togglePBI = function(){
+  const bar = document.getElementById('pbi-expand-bar');
+  const wrap = document.getElementById('pbi-collapse');
+  const iframe = document.getElementById('pbi-inline-iframe');
+  const isOpen = bar.classList.contains('open');
+  if(!isOpen){
+    bar.classList.add('open');
+    wrap.classList.add('open');
+    bar.setAttribute('aria-expanded','true');
+    // lazy-load iframe only on first open
+    if(iframe.dataset.src && !iframe.src.includes('powerbi')){
+      iframe.src = iframe.dataset.src;
+    }
+  } else {
+    bar.classList.remove('open');
+    wrap.classList.remove('open');
+    bar.setAttribute('aria-expanded','false');
+  }
+};
+</script>
 
 <!-- ══════════════════════════════
      RESEARCH TEAM
@@ -441,24 +579,6 @@
 
 <!-- FOOTER -->
 
-<!-- Power BI Modal -->
-<div class="pbi-modal-overlay" id="pbi-modal">
-  <div class="pbi-modal">
-    <div class="pbi-modal-head">
-      <h3 id="pbi-modal-title">Interactive Research Dashboard</h3>
-      <button class="pbi-modal-close" onclick="closePBI()">✕</button>
-    </div>
-    <div class="pbi-iframe-wrap">
-      <div class="pbi-loading" id="pbi-loading">
-        <div class="pbi-spinner"></div>
-        <span>Loading dashboard…</span>
-      </div>
-      <iframe id="pbi-iframe" src="" allowfullscreen
-        onload="document.getElementById('pbi-loading').style.display='none'">
-      </iframe>
-    </div>
-  </div>
-</div>
 
 <footer class="site-footer">
   <div class="container">
@@ -597,12 +717,12 @@ async function loadProject(){
       }
     });
 
-    // Power BI inline dashboard
+    // Power BI expandable dashboard
     const pbiSection = document.getElementById('pbi-inline-section');
     const pbiIframe  = document.getElementById('pbi-inline-iframe');
     if(pbiSection && pbiIframe){
       if(p.powerbi){
-        pbiIframe.src = p.powerbi;
+        pbiIframe.dataset.src = p.powerbi; // lazy — loads only when expanded
         pbiSection.style.display = 'block';
       } else {
         pbiSection.style.display = 'none';
