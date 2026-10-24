@@ -1152,6 +1152,8 @@ function hideModal(id){ $(id).classList.remove('open') }
 /* ── AUTH ── */
 const provider = new GoogleAuthProvider();
 let currentUserEmail = '';
+// Super admins can never be revoked by anyone — not even other admins
+const SUPER_ADMINS = ['datavasity@gmail.com', 'datavasitystd@gmail.com'];
 
 onAuthStateChanged(auth, async user => {
   if(user){
@@ -1249,7 +1251,7 @@ async function loadAdminUsers(){
         <td>${u.email}</td>
         <td>${u.approvedAt?.toDate ? u.approvedAt.toDate().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—'}</td>
         <td><div class="td-actions">
-          ${u.email !== currentUserEmail ? `<button class="btn btn-danger btn-sm" onclick="revokeAdmin('${u.email}')">Revoke</button>` : '<span style="font-size:11px;color:var(--text-lt)">You</span>'}
+          ${SUPER_ADMINS.includes(u.email) ? '<span style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.06em">OWNER</span>' : `<button class="btn btn-danger btn-sm" onclick="revokeAdmin('${u.email}')">Revoke</button>`}
         </div></td>
       </tr>`).join('') : '<tr><td colspan="4"><div class="empty"><div class="empty-icon">👤</div><p>No approved admins yet</p></div></td></tr>';
   }
@@ -1269,6 +1271,7 @@ window.rejectAdmin = async function(email){
 };
 
 window.revokeAdmin = async function(email){
+  if(SUPER_ADMINS.includes(email)){ toast('Owner accounts cannot be revoked.'); return; }
   if(!confirm('Revoke admin access for ' + email + '?')) return;
   await deleteDoc(doc(db,'adminUsers',email));
   toast('Access revoked');
