@@ -270,20 +270,20 @@
     </div>
     <div class="hero-metrics">
       <div class="hero-metric">
-        <div class="metric-num">5,000<sup>+</sup></div>
-        <div class="metric-label">Survey Responses</div>
+        <div class="metric-num" id="impact-applications">—</div>
+        <div class="metric-label">Applications Received</div>
       </div>
       <div class="hero-metric">
-        <div class="metric-num">12</div>
+        <div class="metric-num" id="impact-publications">—</div>
         <div class="metric-label">Research Publications</div>
       </div>
       <div class="hero-metric">
-        <div class="metric-num">18</div>
+        <div class="metric-num" id="impact-contributors">—</div>
         <div class="metric-label">Contributors</div>
       </div>
       <div class="hero-metric">
-        <div class="metric-num">3</div>
-        <div class="metric-label">Partner Communities</div>
+        <div class="metric-num" id="impact-projects">—</div>
+        <div class="metric-label">Projects in Pipeline</div>
       </div>
     </div>
   </div>
@@ -587,9 +587,34 @@ async function loadHomeStats(){
   }
 }
 
+async function loadImpactStats(){
+  try {
+    const [appsSnap, pubsSnap, contribsSnap, projectsSnap] = await Promise.all([
+      getDocs(collection(db,'applications')),
+      getDocs(collection(db,'publications')),
+      getDocs(collection(db,'contributors')),
+      getDocs(collection(db,'projects'))
+    ]);
+    const panel = document.querySelector('.hero-metrics');
+    const animate = () => {
+      countUp(document.getElementById('impact-applications'), appsSnap.size,     '', 1400);
+      countUp(document.getElementById('impact-publications'), pubsSnap.size,      '', 1400);
+      countUp(document.getElementById('impact-contributors'), contribsSnap.size,  '', 1400);
+      countUp(document.getElementById('impact-projects'),     projectsSnap.size,  '', 1400);
+    };
+    if('IntersectionObserver' in window && panel){
+      const obs = new IntersectionObserver(entries => {
+        if(entries[0].isIntersecting){ animate(); obs.disconnect(); }
+      }, { threshold: 0.3 });
+      obs.observe(panel);
+    } else { animate(); }
+  } catch(e){ console.error('Impact stats error:', e); }
+}
+
 loadHomeProjects();
 loadHomeContributors();
 loadHomeStats();
+loadImpactStats();
 </script>
 </body>
 </html>
