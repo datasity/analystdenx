@@ -205,7 +205,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, addDoc, collection, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const app = initializeApp({
@@ -328,9 +328,32 @@ if(applyForm){
       if(gmailDisplay) gmailDisplay.textContent = email;
       document.getElementById('apply-email').value = email;
 
+      btn.innerHTML = 'Checking…';
+
+      /* Step 2 — Duplicate check */
+      const dupQ = query(collection(db,'applications'), where('email','==',email));
+      const dupSnap = await getDocs(dupQ);
+      if(!dupSnap.empty){
+        const existing = dupSnap.docs[0].data();
+        const statusMsg = existing.status === 'approved'
+          ? 'Your application has already been approved. Check your email for next steps.'
+          : existing.status === 'rejected'
+          ? 'We have already reviewed your application. Please check your email for our response.'
+          : 'We already have an application from this email address and are reviewing it. We will get back to you within 5 working days.';
+        btn.innerHTML = 'Application Already Received';
+        btn.disabled = true;
+        btn.style.background = 'var(--gold)';
+        btn.style.color = '#fff';
+        const msg = document.createElement('p');
+        msg.style.cssText = 'margin-top:16px;padding:16px;background:#FFF8EC;border:1px solid var(--gold);color:#7A5C00;font-size:14px;line-height:1.6;font-family:var(--font-body)';
+        msg.textContent = statusMsg;
+        btn.parentElement.appendChild(msg);
+        return;
+      }
+
       btn.innerHTML = 'Submitting…';
 
-      /* Step 2 — Save to Firestore */
+      /* Step 3 — Save to Firestore */
       await addDoc(collection(db,'applications'), {
         name, email, role, location, motivation,
         photoUrl, cvUrl,
