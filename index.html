@@ -293,19 +293,19 @@
     <p class="hero-right-label">Current Research Activity</p>
 
     <div class="hero-right-stat">
-      <div class="hero-right-stat-num">3</div>
+      <div class="hero-right-stat-num" id="stat-active-projects">—</div>
       <div class="hero-right-stat-label">Active Field Projects</div>
     </div>
     <div class="hero-right-stat">
-      <div class="hero-right-stat-num">3,325</div>
+      <div class="hero-right-stat-num" id="stat-responses">—</div>
       <div class="hero-right-stat-label">Survey Responses Collected</div>
     </div>
     <div class="hero-right-stat">
-      <div class="hero-right-stat-num">12</div>
+      <div class="hero-right-stat-num" id="stat-lga">—</div>
       <div class="hero-right-stat-label">LGA Coverage Areas</div>
     </div>
     <div class="hero-right-stat">
-      <div class="hero-right-stat-num">72%</div>
+      <div class="hero-right-stat-num" id="stat-burden">—</div>
       <div class="hero-right-stat-label">Report High Transport Burden</div>
     </div>
 
@@ -562,8 +562,89 @@ async function loadHomeContributors(){
   } catch(e){ console.error('Contributors load error:', e); }
 }
 
+/* ── COUNT-UP ANIMATION ── */
+function countUp(el, target, suffix, duration){
+  if(!el) return;
+  const isFloat = String(target).includes('.');
+  const start = 0;
+  const startTime = performance.now();
+  function step(now){
+    const progress = Math.min((now - startTime) / duration, 1);
+    // ease out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const value = eased * target;
+    if(isFloat){
+      el.textContent = value.toFixed(1) + (suffix||'');
+    } else {
+      el.textContent = Math.round(value).toLocaleString() + (suffix||'');
+    }
+    if(progress < 1) requestAnimationFrame(step);
+    else el.textContent = target.toLocaleString() + (suffix||'');
+  }
+  requestAnimationFrame(step);
+}
+
+/* ── LOAD STATS from Firestore ── */
+async function loadHomeStats(){
+  try {
+    const snap = await getDocs(collection(db,'projects'));
+    const projects = snap.docs.map(d=>({id:d.id,...d.data()}));
+
+    const active = projects.filter(p => p.status === 'active' || p.status === 'ongoing');
+    const totalResponses = active.reduce((sum, p) => sum + (parseInt(p.responses)||0), 0);
+
+    // LGA coverage — count unique LGAs across all active projects
+    const lgaSet = new Set();
+    active.forEach(p => {
+      if(Array.isArray(p.lgas)) p.lgas.forEach(l => lgaSet.add(l));
+      else if(p.lga) lgaSet.add(p.lga);
+    });
+    const lgaCount = lgaSet.size || active.length * 4; // fallback estimate
+
+    // Burden % — pull from siteStats doc if exists, else use project field
+    let burdenPct = null;
+    try {
+      const { getDoc, doc: fsDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const statsDoc = await getDoc(fsDoc(db,'siteStats','homepage'));
+      if(statsDoc.exists()) burdenPct = statsDoc.data().burdenPct;
+    } catch(_){}
+    if(!burdenPct){
+      // fall back to first active project's burdenPct field if set
+      const p = active.find(p => p.burdenPct);
+      burdenPct = p ? p.burdenPct : null;
+    }
+
+    // Animate in with Intersection Observer so it fires when visible
+    const panel = document.querySelector('.hero-right');
+    const animate = () => {
+      countUp(document.getElementById('stat-active-projects'), active.length, '', 1200);
+      countUp(document.getElementById('stat-responses'), totalResponses || active.length, '', 1800);
+      countUp(document.getElementById('stat-lga'), lgaCount, '', 1500);
+      if(burdenPct){
+        countUp(document.getElementById('stat-burden'), parseFloat(burdenPct), '%', 1600);
+      } else {
+        const el = document.getElementById('stat-burden');
+        if(el) el.textContent = '—';
+      }
+    };
+
+    if('IntersectionObserver' in window && panel){
+      const obs = new IntersectionObserver(entries => {
+        if(entries[0].isIntersecting){ animate(); obs.disconnect(); }
+      }, { threshold: 0.3 });
+      obs.observe(panel);
+    } else {
+      animate();
+    }
+  } catch(e){
+    console.error('Stats load error:', e);
+    // Graceful fallback — keep dashes
+  }
+}
+
 loadHomeProjects();
 loadHomeContributors();
+loadHomeStats();
 </script>
 </body>
 </html>
