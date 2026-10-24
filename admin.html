@@ -1126,7 +1126,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChang
 
 const firebaseConfig = {
   apiKey: "AIzaSyBzlCB74rpbd6o2vx7RbsfuIrkfOyhBUTQ",
-  authDomain: "analyst-den-3f9c9.firebaseapp.com",
+  authDomain: "datasity.github.io",
   projectId: "analyst-den-3f9c9",
   storageBucket: "analyst-den-3f9c9.firebasestorage.app",
   messagingSenderId: "438646500281",
@@ -1753,9 +1753,21 @@ function renderApps(list){
       <td><span class="badge badge-${a.status||'pending'}">${a.status||'pending'}</span></td>
       <td><div class="td-actions">
         <button class="btn btn-outline btn-sm" onclick="viewApp('${a.id}')">View</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteApp('${a.id}','${(a.name||'').replace(/'/g,'')}')">Delete</button>
       </div></td>
     </tr>`).join('');
 }
+
+window.deleteApp = async function(id, name){
+  if(!confirm('Delete application from ' + (name||id) + '? This cannot be undone.')) return;
+  try {
+    await deleteDoc(doc(db,'applications',id));
+    allApps = allApps.filter(a => a.id !== id);
+    renderApps(allApps);
+    loadOverview();
+    toast('Application deleted');
+  } catch(e){ toast('Error: ' + e.message); }
+};
 
 $('search-apps').oninput = e => {
   const q = e.target.value.toLowerCase();
