@@ -349,6 +349,25 @@
 </section>
 
 <!-- ══════════════════════════════
+     POWER BI INLINE DASHBOARD
+══════════════════════════════ -->
+<section id="pbi-inline-section" style="display:none;background:var(--ink);border-top:3px solid var(--gold)">
+  <div class="container" style="padding-top:48px;padding-bottom:48px">
+    <div class="section-eyebrow">
+      <span class="eyebrow-text" style="color:rgba(255,255,255,0.5)">Interactive Dashboard</span>
+      <div class="eyebrow-line" style="background:rgba(255,255,255,0.15)"></div>
+    </div>
+    <div style="position:relative;width:100%;padding-bottom:56.25%;height:0;border:1px solid rgba(255,255,255,0.12);border-radius:2px;overflow:hidden;margin-top:24px">
+      <iframe id="pbi-inline-iframe"
+        src=""
+        allowfullscreen
+        style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;display:block">
+      </iframe>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
      RESEARCH TEAM
 ══════════════════════════════ -->
 <section>
@@ -578,17 +597,15 @@ async function loadProject(){
       }
     });
 
-    // Power BI button
-    const pbiBtnWrap = document.getElementById('pbi-btn-wrap');
-    if(pbiBtnWrap){
+    // Power BI inline dashboard
+    const pbiSection = document.getElementById('pbi-inline-section');
+    const pbiIframe  = document.getElementById('pbi-inline-iframe');
+    if(pbiSection && pbiIframe){
       if(p.powerbi){
-        pbiBtnWrap.innerHTML = `
-          <button onclick="openPBI('${p.powerbi}','${(p.title||'').replace(/'/g,"\'")} — Dashboard')"
-            class="btn btn--primary" style="display:inline-flex;align-items:center;gap:8px">
-            📊 View Interactive Dashboard
-          </button>`;
+        pbiIframe.src = p.powerbi;
+        pbiSection.style.display = 'block';
       } else {
-        pbiBtnWrap.innerHTML = '';
+        pbiSection.style.display = 'none';
       }
     }
 
